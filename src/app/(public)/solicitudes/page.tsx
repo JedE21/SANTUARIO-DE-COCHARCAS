@@ -1,7 +1,8 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { Container, Section, SectionHeading, Badge, Card } from '@/components/public';
-import { Stagger, StaggerItem } from '@/components/motion';
+import { Container, Section, SectionHeading, Card } from '@/components/public';
+import { PageHero } from '@/components/public/page-hero';
+import { Reveal, Stagger, StaggerItem } from '@/components/motion';
 import { pageMetadata } from '@/lib/seo';
 
 export const metadata: Metadata = pageMetadata({
@@ -19,28 +20,24 @@ const options = [
 export default function SolicitudesPage() {
   return (
     <main>
-      <Section className="bg-marfil">
-        <Container className="py-20">
-          <div className="mx-auto max-w-3xl text-center">
-            <Badge className="mb-4">Pastoral</Badge>
-            <h1 className="text-4xl font-bold sm:text-5xl">Solicitudes pastorales</h1>
-            <p className="mt-6 text-lg text-muted-foreground">
-              Gestiona tus pedidos de misa, sacramentos y sigue su estado de forma sencilla.
-            </p>
-          </div>
-        </Container>
-      </Section>
+      <PageHero
+        eyebrow="Pastoral"
+        title="Solicitudes pastorales"
+        description="Gestiona tus pedidos de misa, sacramentos y sigue su estado de forma sencilla."
+      />
       <Section className="bg-background">
         <Container>
-          <SectionHeading title="Opciones" />
+          <Reveal>
+            <SectionHeading title="Opciones" />
+          </Reveal>
           <Stagger className="mt-10 grid gap-6 md:grid-cols-3">
             {options.map((option) => (
               <StaggerItem key={option.href} className="h-full">
-                <Card className="h-full p-6">
-                  <h2 className="text-xl font-semibold">{option.title}</h2>
+                <Card className="h-full p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
+                  <h2 className="font-heading text-xl font-semibold text-azul">{option.title}</h2>
                   <p className="mt-2 text-sm text-muted-foreground">{option.description}</p>
-                  <Link href={option.href} className="mt-6 inline-flex items-center text-sm font-medium text-primary">
-                    Ir a la solicitud <span className="ml-2">→</span>
+                  <Link href={option.href} className="link-editorial mt-6 inline-flex items-center text-sm font-medium text-primary">
+                    Ir a la solicitud <span className="ml-2" aria-hidden="true">→</span>
                   </Link>
                 </Card>
               </StaggerItem>

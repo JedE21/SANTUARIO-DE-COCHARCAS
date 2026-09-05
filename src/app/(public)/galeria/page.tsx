@@ -3,7 +3,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { ImageIcon } from 'lucide-react';
 import { Container, Section, SectionHeading, Badge, Card, EmptyState } from '@/components/public';
-import { Stagger, StaggerItem } from '@/components/motion';
+import { PageHero } from '@/components/public/page-hero';
+import { Reveal, Stagger, StaggerItem } from '@/components/motion';
 import { GalleryGrid } from '@/components/gallery/GalleryGrid';
 import { getGalleryAlbums, getGalleryItems, getGalleryCategories } from '@/lib/queries';
 import { pageMetadata } from '@/lib/seo';
@@ -25,21 +26,17 @@ export default async function GaleriaPage() {
 
   return (
     <main>
-      <Section className="bg-marfil">
-        <Container className="py-20">
-          <div className="mx-auto max-w-3xl text-center">
-            <Badge className="mb-4">Galería</Badge>
-            <h1 className="text-4xl font-bold sm:text-5xl">Galería fotográfica</h1>
-            <p className="mt-6 text-lg text-muted-foreground">
-              Vistas del templo, celebraciones y momentos de la comunidad.
-            </p>
-          </div>
-        </Container>
-      </Section>
+      <PageHero
+        eyebrow="Galería"
+        title="Galería fotográfica"
+        description="Vistas del templo, celebraciones y momentos de la comunidad."
+      />
 
       <Section className="bg-background">
         <Container>
-          <SectionHeading title="Colecciones" description="Explora por álbumes temáticos." />
+          <Reveal>
+            <SectionHeading title="Colecciones" description="Explora por álbumes temáticos." />
+          </Reveal>
           {albums.length === 0 ? (
             <EmptyState
               className="mt-10"
@@ -54,14 +51,14 @@ export default async function GaleriaPage() {
                 const cover = album.cover_image_url || items.find((i) => i.album_id === album.id)?.image_url || '/images/cocharcas-gallery.svg';
                 return (
                   <StaggerItem key={album.id} className="h-full">
-                    <Card className="group h-full overflow-hidden">
+                    <Card className="group h-full overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
                       <Link href={`/galeria/${album.slug}`} className="block">
                         <div className="relative aspect-video w-full overflow-hidden bg-muted/20">
-                          <Image src={cover} alt={album.title} fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover transition-transform duration-300 group-hover:scale-105" />
+                          <Image src={cover} alt={album.title} fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover transition-transform duration-500 group-hover:scale-[1.03]" />
                         </div>
                         <div className="space-y-2 p-6">
                           {category ? <Badge variant="outline">{category.name}</Badge> : null}
-                          <h3 className="text-xl font-semibold group-hover:text-primary">{album.title}</h3>
+                          <h3 className="text-xl font-semibold text-azul transition-normal group-hover:text-carmesi">{album.title}</h3>
                           <p className="text-sm text-muted-foreground line-clamp-2">{album.description}</p>
                         </div>
                       </Link>
@@ -76,7 +73,9 @@ export default async function GaleriaPage() {
 
       <Section className="bg-marfil">
         <Container>
-          <SectionHeading title="Imágenes destacadas" description="Toca una fotografía para verla ampliada." />
+          <Reveal>
+            <SectionHeading title="Imágenes destacadas" description="Toca una fotografía para verla ampliada." />
+          </Reveal>
           {featured.length === 0 ? (
             <EmptyState
               className="mt-10"

@@ -3,7 +3,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { CalendarDays } from 'lucide-react';
 import { Container, Section, SectionHeading, Badge, Card, EmptyState } from '@/components/public';
-import { Stagger, StaggerItem } from '@/components/motion';
+import { PageHero } from '@/components/public/page-hero';
+import { Reveal, Stagger, StaggerItem } from '@/components/motion';
 import { getEventsList } from '@/lib/queries';
 import { pageMetadata } from '@/lib/seo';
 
@@ -26,24 +27,20 @@ export default async function EventosPage() {
 
   return (
     <main>
-      <Section className="bg-marfil">
-        <Container className="py-20">
-          <div className="mx-auto max-w-3xl text-center">
-            <Badge className="mb-4">Eventos</Badge>
-            <h1 className="text-4xl font-bold sm:text-5xl">Próximos eventos y celebraciones</h1>
-            <p className="mt-6 text-lg text-muted-foreground">
-              Encuentros litúrgicos, peregrinaciones y actividades comunitarias.
-            </p>
-          </div>
-        </Container>
-      </Section>
+      <PageHero
+        eyebrow="Eventos"
+        title="Próximos eventos y celebraciones"
+        description="Encuentros litúrgicos, peregrinaciones y actividades comunitarias."
+      />
 
       <Section className="bg-background">
         <Container>
-          <SectionHeading
-            title={upcoming.length ? 'Agenda' : 'Eventos'}
-            description="Programación de la comunidad."
-          />
+          <Reveal>
+            <SectionHeading
+              title={upcoming.length ? 'Agenda' : 'Eventos'}
+              description="Programación de la comunidad."
+            />
+          </Reveal>
           {visible.length === 0 ? (
             <EmptyState
               className="mt-10"
@@ -55,16 +52,16 @@ export default async function EventosPage() {
             <Stagger className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {visible.map((event) => (
                 <StaggerItem key={event.id} className="h-full">
-                  <Card className="group h-full overflow-hidden">
+                  <Card className="group h-full overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
                     <Link href={`/eventos/${event.slug}`} className="block">
                       <div className="relative aspect-video w-full overflow-hidden bg-muted/20">
-                        <Image src={event.image_url || '/images/cocharcas-event.svg'} alt={event.title} fill sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw" className="object-cover transition-transform duration-300 group-hover:scale-105" />
+                        <Image src={event.image_url || '/images/cocharcas-event.svg'} alt={event.title} fill sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw" className="object-cover transition-transform duration-500 group-hover:scale-[1.03]" />
                       </div>
                       <div className="space-y-3 p-6">
                         <Badge variant="outline">{formatDate(event.start_date)}</Badge>
-                        <h3 className="text-xl font-semibold group-hover:text-primary">{event.title}</h3>
+                        <h3 className="text-xl font-semibold text-azul transition-normal group-hover:text-carmesi">{event.title}</h3>
                         <p className="text-sm text-muted-foreground line-clamp-3">{event.description}</p>
-                        {event.location ? <p className="text-xs uppercase tracking-wide text-primary">{event.location}</p> : null}
+                        {event.location ? <p className="text-xs uppercase tracking-wide text-carmesi">{event.location}</p> : null}
                       </div>
                     </Link>
                   </Card>
@@ -75,14 +72,16 @@ export default async function EventosPage() {
 
           {past.length > 0 && (
             <>
-              <SectionHeading className="mt-20" title="Eventos anteriores" />
+              <Reveal>
+                <SectionHeading className="mt-20" title="Eventos anteriores" />
+              </Reveal>
               <Stagger className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
                 {past.map((event) => (
                   <StaggerItem key={event.id} className="h-full">
-                    <Card className="h-full p-6">
+                    <Card className="h-full p-6 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md">
                       <Link href={`/eventos/${event.slug}`}>
-                        <p className="text-xs uppercase tracking-wide text-primary">{formatDate(event.start_date)}</p>
-                        <h3 className="mt-2 text-lg font-semibold">{event.title}</h3>
+                        <p className="text-xs uppercase tracking-wide text-carmesi">{formatDate(event.start_date)}</p>
+                        <h3 className="mt-2 text-lg font-semibold text-azul">{event.title}</h3>
                       </Link>
                     </Card>
                   </StaggerItem>

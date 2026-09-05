@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
-import { Container, Section, SectionHeading, Link, Button, Card, Badge } from '@/components/public';
-import { FadeIn, Stagger } from '@/components/motion';
+import { Container, Section, SectionHeading, Link, Button, Card } from '@/components/public';
+import { PageHero } from '@/components/public/page-hero';
+import { Reveal, Stagger } from '@/components/motion';
 import { pageMetadata } from '@/lib/seo';
 
 const feSections = [
@@ -35,48 +36,36 @@ export const metadata: Metadata = pageMetadata({
 export default function FELandingPage() {
   return (
     <main>
-      <Section className="bg-gradient-to-br from-marfil via-background to-blanco">
-        <Container className="py-20">
-          <div className="mx-auto max-w-3xl text-center">
-            <FadeIn>
-              <Badge className="mb-4">Vida de fe</Badge>
-            </FadeIn>
-            <FadeIn delay={0.1}>
-              <h1 className="text-4xl font-bold sm:text-5xl">Camina con la comunidad del santuario</h1>
-            </FadeIn>
-            <FadeIn delay={0.2}>
-              <p className="mt-6 text-lg text-muted-foreground">
-                Un lugar para celebrar, pedir, agradecer y crecer en la fe con acompañamiento pastoral.
-              </p>
-            </FadeIn>
-            <FadeIn delay={0.3}>
-              <div className="mt-8 flex flex-wrap justify-center gap-4">
-                <Button asChild>
-                  <Link href="/fe/misas">Ver horarios</Link>
-                </Button>
-                <Button asChild variant="outline">
-                  <Link href="/fe/sacramentos">Explorar sacramentos</Link>
-                </Button>
-              </div>
-            </FadeIn>
-          </div>
-        </Container>
-      </Section>
+      <PageHero
+        eyebrow="Vida de fe"
+        title="Camina con la comunidad del santuario"
+        description="Un lugar para celebrar, pedir, agradecer y crecer en la fe con acompañamiento pastoral."
+      />
 
       <Section className="bg-background">
         <Container>
-          <SectionHeading
-            title="Áreas de la vida de fe"
-            description="Accesos directos a los espacios más solicitados por la comunidad."
-          />
-          <Stagger className="mt-10 grid gap-6 md:grid-cols-2">
+          <Reveal>
+            <SectionHeading
+              title="Áreas de la vida de fe"
+              description="Accesos directos a los espacios más solicitados por la comunidad."
+            />
+          </Reveal>
+          <div className="mt-10 flex flex-wrap justify-center gap-4">
+            <Button asChild>
+              <Link href="/fe/misas">Ver horarios</Link>
+            </Button>
+            <Button asChild variant="outline">
+              <Link href="/fe/sacramentos">Explorar sacramentos</Link>
+            </Button>
+          </div>
+          <Stagger className="mt-12 grid gap-6 md:grid-cols-2">
             {feSections.map((section) => (
-              <Card key={section.href} className="p-6">
-                <h2 className="text-2xl font-semibold">{section.title}</h2>
+              <Card key={section.href} className="p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
+                <h2 className="font-heading text-2xl font-semibold text-azul">{section.title}</h2>
                 <p className="mt-3 text-sm text-muted-foreground">{section.description}</p>
-                <Link href={section.href} className="mt-6 inline-flex items-center text-sm font-medium text-primary">
+                <Link href={section.href} className="link-editorial mt-6 inline-flex items-center text-sm font-medium text-primary">
                   Abrir sección
-                  <span className="ml-2" aria-hidden="true">→</span>
+                  <span className="ml-2 transition-transform duration-300 group-hover:translate-x-1" aria-hidden="true">→</span>
                 </Link>
               </Card>
             ))}

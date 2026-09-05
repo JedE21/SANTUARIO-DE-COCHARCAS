@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
-import { Container, Section, Badge, SectionHeading } from '@/components/public';
+import { Container, Section } from '@/components/public';
+import { PageHero } from '@/components/public/page-hero';
 import { TrackingForm } from '@/components/forms/TrackingForm';
 import { pageMetadata } from '@/lib/seo';
 
@@ -13,17 +14,11 @@ export const metadata: Metadata = pageMetadata({
 export default function SeguimientoPage() {
   return (
     <main>
-      <Section className="bg-marfil">
-        <Container className="py-20">
-          <div className="mx-auto max-w-3xl text-center">
-            <Badge className="mb-4">Seguimiento</Badge>
-            <h1 className="text-4xl font-bold sm:text-5xl">Consulta el estado de tu solicitud</h1>
-            <p className="mt-6 text-lg text-muted-foreground">
-              Ingresa el código que recibiste al enviar tu solicitud.
-            </p>
-          </div>
-        </Container>
-      </Section>
+      <PageHero
+        eyebrow="Seguimiento"
+        title="Consulta el estado de tu solicitud"
+        description="Ingresa el código que recibiste al enviar tu solicitud."
+      />
       <Section className="bg-background">
         <Container className="flex justify-center">
           <TrackingForm />

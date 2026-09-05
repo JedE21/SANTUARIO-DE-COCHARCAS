@@ -3,7 +3,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Sparkles } from 'lucide-react';
 import { Container, Section, SectionHeading, Badge, Card, EmptyState } from '@/components/public';
-import { Stagger, StaggerItem } from '@/components/motion';
+import { PageHero } from '@/components/public/page-hero';
+import { Stagger, StaggerItem, Reveal } from '@/components/motion';
 import { getFestivitiesList } from '@/lib/queries';
 import { pageMetadata } from '@/lib/seo';
 
@@ -22,20 +23,16 @@ export default async function FestividadesPage() {
   const festivities = await getFestivitiesList();
   return (
     <main>
-      <Section className="bg-marfil">
-        <Container className="py-20">
-          <div className="mx-auto max-w-3xl text-center">
-            <Badge className="mb-4">Festividades</Badge>
-            <h1 className="text-4xl font-bold sm:text-5xl">Celebraciones y fiestas patronales</h1>
-            <p className="mt-6 text-lg text-muted-foreground">
-              Jornadas de fe, cultura y encuentro comunitario que dan vida al santuario.
-            </p>
-          </div>
-        </Container>
-      </Section>
+      <PageHero
+        eyebrow="Festividades"
+        title="Celebraciones y fiestas patronales"
+        description="Jornadas de fe, cultura y encuentro comunitario que dan vida al santuario."
+      />
       <Section className="bg-background">
         <Container>
-          <SectionHeading title="Festividades" description="Calendario de las celebraciones principales." />
+          <Reveal>
+            <SectionHeading title="Festividades" description="Calendario de las celebraciones principales." />
+          </Reveal>
           {festivities.length === 0 ? (
             <EmptyState
               className="mt-10"
@@ -47,14 +44,14 @@ export default async function FestividadesPage() {
             <Stagger className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {festivities.map((festivity) => (
                 <StaggerItem key={festivity.id} className="h-full">
-                  <Card className="group h-full overflow-hidden">
+                  <Card className="group h-full overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
                     <Link href={`/festividades/${festivity.slug}`} className="block">
                       <div className="relative aspect-video w-full overflow-hidden bg-muted/20">
-                        <Image src={festivity.cover_image_url || '/images/cocharcas-hero.svg'} alt={festivity.name} fill sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw" className="object-cover transition-transform duration-300 group-hover:scale-105" />
+                        <Image src={festivity.cover_image_url || '/images/cocharcas-hero.svg'} alt={festivity.name} fill sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw" className="object-cover transition-transform duration-500 group-hover:scale-[1.03]" />
                       </div>
                       <div className="space-y-3 p-6">
                         <Badge variant="outline">{festivity.start_date ? formatDate(festivity.start_date) : 'Próximamente'}</Badge>
-                        <h3 className="text-xl font-semibold group-hover:text-primary">{festivity.name}</h3>
+                        <h3 className="text-xl font-semibold text-azul transition-normal group-hover:text-carmesi">{festivity.name}</h3>
                         <p className="text-sm text-muted-foreground line-clamp-3">{festivity.description}</p>
                       </div>
                     </Link>

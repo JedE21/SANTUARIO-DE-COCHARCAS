@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
-import { Container, Section, Badge, Card } from '@/components/public';
+import { Container, Section, Card } from '@/components/public';
+import { PageHero } from '@/components/public/page-hero';
+import { Reveal } from '@/components/motion';
 import { ContactForm } from '@/components/forms/ContactForm';
 import { getSiteSettings, getFaqs } from '@/lib/queries';
 import { pageMetadata } from '@/lib/seo';
@@ -14,17 +16,11 @@ export default async function ContactoPage() {
   const [settings, faqs] = await Promise.all([getSiteSettings(), getFaqs()]);
   return (
     <main>
-      <Section className="bg-marfil">
-        <Container className="py-20">
-          <div className="mx-auto max-w-3xl text-center">
-            <Badge className="mb-4">Contacto</Badge>
-            <h1 className="text-4xl font-bold sm:text-5xl">Escríbenos</h1>
-            <p className="mt-6 text-lg text-muted-foreground">
-              Estamos para orientarte en tu visita y en tus solicitudes pastorales.
-            </p>
-          </div>
-        </Container>
-      </Section>
+      <PageHero
+        eyebrow="Contacto"
+        title="Escríbenos"
+        description="Estamos para orientarte en tu visita y en tus solicitudes pastorales."
+      />
 
       <Section className="bg-background">
         <Container>
@@ -32,8 +28,9 @@ export default async function ContactoPage() {
             <ContactForm />
 
             <div className="space-y-6">
-              <Card className="p-6">
-                <h2 className="text-xl font-semibold">Información</h2>
+              <Card className="p-6 transition-all duration-300 hover:shadow-md">
+                <h2 className="font-heading text-xl font-semibold text-azul">Información</h2>
+                <div className="linea-dorada mt-3 h-px w-14" aria-hidden="true" />
                 <dl className="mt-4 space-y-2 text-sm text-muted-foreground">
                   <div><dt className="font-medium text-foreground">Dirección</dt><dd>{settings.address}</dd></div>
                   <div><dt className="font-medium text-foreground">Teléfono</dt><dd>{settings.phone}</dd></div>
@@ -42,8 +39,9 @@ export default async function ContactoPage() {
               </Card>
 
               {faqs.length > 0 && (
-                <Card className="p-6">
-                  <h2 className="text-xl font-semibold">Preguntas frecuentes</h2>
+                <Card className="p-6 transition-all duration-300 hover:shadow-md">
+                  <h2 className="font-heading text-xl font-semibold text-azul">Preguntas frecuentes</h2>
+                  <div className="linea-dorada mt-3 h-px w-14" aria-hidden="true" />
                   <div className="mt-4 space-y-4">
                     {faqs.slice(0, 4).map((faq) => (
                       <div key={faq.id}>
