@@ -18,7 +18,7 @@ export default async function AdminMisasPage() {
           { key: 'day_of_week', label: 'Día' },
           { key: 'time', label: 'Hora' },
           { key: 'place', label: 'Lugar' },
-          { key: 'active', label: 'Activo', render: (row) => (row.active ? 'Sí' : 'No') },
+          { key: 'active', label: 'Activo', type: 'boolean' },
         ]}
         fields={[
           { name: 'day_of_week', label: 'Día', required: true },

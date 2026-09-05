@@ -18,11 +18,7 @@ export default async function AdminEventosPage() {
           { key: 'title', label: 'Título' },
           { key: 'location', label: 'Lugar' },
           { key: 'status', label: 'Estado' },
-          {
-            key: 'start_date',
-            label: 'Fecha',
-            render: (row) => (row.start_date ? new Date(`${row.start_date}T00:00:00`).toLocaleDateString('es-PE') : '—'),
-          },
+          { key: 'start_date', label: 'Fecha', type: 'date' },
         ]}
         fields={[
           { name: 'title', label: 'Título', required: true },

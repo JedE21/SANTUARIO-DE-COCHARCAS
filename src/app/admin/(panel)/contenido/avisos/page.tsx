@@ -17,12 +17,7 @@ export default async function AdminAvisosPage() {
         columns={[
           { key: 'title', label: 'Título' },
           { key: 'status', label: 'Estado' },
-          {
-            key: 'published_at',
-            label: 'Publicación',
-            render: (row) =>
-              row.published_at ? new Date(row.published_at).toLocaleDateString('es-PE') : '—',
-          },
+          { key: 'published_at', label: 'Publicación', type: 'date' },
         ]}
         fields={[
           { name: 'title', label: 'Título', required: true },

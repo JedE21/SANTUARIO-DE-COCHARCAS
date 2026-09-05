@@ -18,7 +18,7 @@ export default async function AdminNavegacionPage() {
           { key: 'position', label: 'Orden' },
           { key: 'label', label: 'Etiqueta' },
           { key: 'href', label: 'Enlace' },
-          { key: 'visible', label: 'Visible', render: (row) => (row.visible ? 'Sí' : 'No') },
+          { key: 'visible', label: 'Visible', type: 'boolean' },
         ]}
         fields={[
           { name: 'label', label: 'Etiqueta', required: true },

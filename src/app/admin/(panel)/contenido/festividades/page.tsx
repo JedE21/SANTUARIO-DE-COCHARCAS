@@ -18,11 +18,7 @@ export default async function AdminFestividadesPage() {
           { key: 'name', label: 'Nombre' },
           { key: 'slug', label: 'Slug' },
           { key: 'status', label: 'Estado' },
-          {
-            key: 'start_date',
-            label: 'Inicio',
-            render: (row) => (row.start_date ? new Date(`${row.start_date}T00:00:00`).toLocaleDateString('es-PE') : '—'),
-          },
+          { key: 'start_date', label: 'Inicio', type: 'date' },
         ]}
         fields={[
           { name: 'name', label: 'Nombre', required: true },

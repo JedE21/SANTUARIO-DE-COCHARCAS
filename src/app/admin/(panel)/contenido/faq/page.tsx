@@ -18,7 +18,7 @@ export default async function AdminFaqPage() {
           { key: 'question', label: 'Pregunta' },
           { key: 'category', label: 'Categoría' },
           { key: 'position', label: 'Orden' },
-          { key: 'active', label: 'Activa', render: (row) => (row.active ? 'Sí' : 'No') },
+          { key: 'active', label: 'Activa', type: 'boolean' },
         ]}
         fields={[
           { name: 'question', label: 'Pregunta', required: true },

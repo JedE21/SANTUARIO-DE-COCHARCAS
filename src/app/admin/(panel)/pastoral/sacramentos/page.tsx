@@ -21,7 +21,7 @@ export default async function AdminSacramentosPage() {
           { key: 'name', label: 'Sacramento' },
           { key: 'slug', label: 'Slug' },
           { key: 'position', label: 'Orden' },
-          { key: 'active', label: 'Disponible', render: (row) => (row.active ? 'Sí' : 'No') },
+          { key: 'active', label: 'Disponible', type: 'boolean' },
         ]}
         fields={[
           { name: 'name', label: 'Nombre', required: true },

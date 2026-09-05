@@ -21,7 +21,7 @@ export default async function AdminInicioPage() {
           { key: 'position', label: 'Orden' },
           { key: 'key', label: 'Clave' },
           { key: 'title', label: 'Título' },
-          { key: 'visible', label: 'Visible', render: (row) => (row.visible ? 'Sí' : 'No') },
+          { key: 'visible', label: 'Visible', type: 'boolean' },
         ]}
         fields={[
           { name: 'key', label: 'Clave interna (identificador)', required: true },

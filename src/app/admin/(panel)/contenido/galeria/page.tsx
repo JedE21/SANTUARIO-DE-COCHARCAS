@@ -19,7 +19,7 @@ export default async function AdminGaleriaPage() {
             { key: 'title', label: 'Álbum' },
             { key: 'slug', label: 'Slug' },
             { key: 'position', label: 'Orden' },
-            { key: 'active', label: 'Activo', render: (row) => (row.active ? 'Sí' : 'No') },
+            { key: 'active', label: 'Activo', type: 'boolean' },
           ]}
           fields={[
             { name: 'title', label: 'Nombre del álbum', required: true },
@@ -50,7 +50,7 @@ export default async function AdminGaleriaPage() {
             { key: 'title', label: 'Título' },
             { key: 'alt_text', label: 'Alt' },
             { key: 'position', label: 'Orden' },
-            { key: 'visible', label: 'Visible', render: (row) => (row.visible ? 'Sí' : 'No') },
+            { key: 'visible', label: 'Visible', type: 'boolean' },
           ]}
           fields={[
             { name: 'title', label: 'Título' },

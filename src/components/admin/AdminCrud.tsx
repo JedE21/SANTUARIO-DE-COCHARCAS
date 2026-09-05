@@ -13,10 +13,17 @@ interface FieldConfig {
   rows?: number;
 }
 
+/**
+ * Columnas declarativas (serializables). NUNCA pasar funciones por props:
+ * este componente es cliente y vive en la frontera RSC.
+ */
 interface ColumnConfig<T> {
   key: keyof T | string;
   label: string;
-  render?: (row: T) => React.ReactNode;
+  /** Formato declarativo de la celda: texto plano, booleano o fecha. */
+  type?: 'text' | 'boolean' | 'date';
+  trueLabel?: string;
+  falseLabel?: string;
 }
 
 interface AdminCrudProps<T extends { id: string }> {
@@ -57,6 +64,20 @@ export function AdminCrud<T extends { id: string }>({
     if (typeof v === 'object' && v instanceof Date) return v.toISOString().slice(0, 10);
     return String(v);
   };
+
+  /** Celda segun tipo declarativo (sin funciones del servidor). */
+  function cellContent(row: T, col: ColumnConfig<T>): React.ReactNode {
+    const raw = (row as Record<string, unknown>)[col.key as string];
+    if (col.type === 'boolean') {
+      return raw ? col.trueLabel ?? 'Sí' : col.falseLabel ?? 'No';
+    }
+    if (col.type === 'date') {
+      if (!raw) return '—';
+      const d = new Date(String(raw).length === 10 ? `${String(raw)}T00:00:00` : String(raw));
+      return Number.isNaN(d.getTime()) ? String(raw) : d.toLocaleDateString('es-PE');
+    }
+    return raw === null || raw === undefined || raw === '' ? '—' : String(raw);
+  }
 
   async function onSubmit(ev: React.FormEvent<HTMLFormElement>) {
     ev.preventDefault();
@@ -120,9 +141,7 @@ export function AdminCrud<T extends { id: string }>({
                 <tr key={row.id} className={`hover:bg-marfil/50 ${editing?.id === row.id ? 'bg-dorado/10' : ''}`}>
                   {columns.map((col) => (
                     <td key={String(col.key)} className="px-4 py-3 text-carbone/80">
-                      {col.render
-                        ? col.render(row)
-                        : String((row as Record<string, unknown>)[col.key as string] ?? '—')}
+                      {cellContent(row, col)}
                     </td>
                   ))}
                   <td className="px-4 py-3">
