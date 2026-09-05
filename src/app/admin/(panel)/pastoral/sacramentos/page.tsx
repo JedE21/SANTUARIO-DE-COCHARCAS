@@ -1,29 +1,28 @@
 import { AdminPageHeader } from '@/components/admin/AdminPageHeader';
-import { AdminTable } from '@/components/admin/AdminTable';
-import { AdminSaveForm } from '@/components/admin/AdminSaveForm';
+import { AdminCrud } from '@/components/admin/AdminCrud';
 import { getAllSacramentsAdmin } from '@/lib/queries-admin';
+
+export const dynamic = 'force-dynamic';
 
 export default async function AdminSacramentosPage() {
   const sacraments = await getAllSacramentsAdmin();
 
   return (
     <div className="space-y-8">
-      <AdminPageHeader title="Sacramentos" description="Configura los sacramentos disponibles y sus requisitos." />
-      <AdminTable
+      <AdminPageHeader
+        title="Sacramentos"
+        description="Configura los sacramentos disponibles, sus requisitos y su visibilidad en el formulario público."
+      />
+      <AdminCrud
+        table="sacraments"
         rows={sacraments}
+        emptyMessage="No hay sacramentos configurados."
         columns={[
           { key: 'name', label: 'Sacramento' },
           { key: 'slug', label: 'Slug' },
-          {
-            key: 'active',
-            label: 'Activo',
-            render: (row) => (row.active ? 'Sí' : 'No'),
-          },
+          { key: 'position', label: 'Orden' },
+          { key: 'active', label: 'Disponible', render: (row) => (row.active ? 'Sí' : 'No') },
         ]}
-      />
-      <AdminSaveForm
-        table="sacraments"
-        submitLabel="Agregar sacramento"
         fields={[
           { name: 'name', label: 'Nombre', required: true },
           { name: 'slug', label: 'Slug', required: true },
@@ -39,7 +38,6 @@ export default async function AdminSacramentosPage() {
               { value: 'true', label: 'Sí, disponible' },
               { value: 'false', label: 'No disponible temporalmente' },
             ],
-            defaultValue: 'true',
           },
         ]}
       />

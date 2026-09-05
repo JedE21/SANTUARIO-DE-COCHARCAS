@@ -43,3 +43,5 @@ Thumbs.db
 
 # Claude local settings
 .claude/settings.local.json
+.vercel
+.env*

@@ -1,7 +1,8 @@
 import { AdminPageHeader } from '@/components/admin/AdminPageHeader';
-import { AdminTable } from '@/components/admin/AdminTable';
-import { AdminSaveForm } from '@/components/admin/AdminSaveForm';
+import { AdminCrud } from '@/components/admin/AdminCrud';
 import { getAllMassSchedulesAdmin } from '@/lib/queries-admin';
+
+export const dynamic = 'force-dynamic';
 
 export default async function AdminMisasPage() {
   const schedules = await getAllMassSchedulesAdmin();
@@ -9,25 +10,19 @@ export default async function AdminMisasPage() {
   return (
     <div className="space-y-8">
       <AdminPageHeader title="Horarios de misa" description="Administra los horarios de celebración eucarística." />
-      <AdminTable
+      <AdminCrud
+        table="mass_schedules"
         rows={schedules}
+        emptyMessage="No hay horarios configurados."
         columns={[
           { key: 'day_of_week', label: 'Día' },
           { key: 'time', label: 'Hora' },
           { key: 'place', label: 'Lugar' },
-          {
-            key: 'active',
-            label: 'Activo',
-            render: (row) => (row.active ? 'Sí' : 'No'),
-          },
+          { key: 'active', label: 'Activo', render: (row) => (row.active ? 'Sí' : 'No') },
         ]}
-      />
-      <AdminSaveForm
-        table="mass_schedules"
-        submitLabel="Agregar horario"
         fields={[
           { name: 'day_of_week', label: 'Día', required: true },
-          { name: 'time', label: 'Hora (HH:MM)', required: true },
+          { name: 'time', label: 'Hora (HH:MM)', type: 'time', required: true },
           { name: 'place', label: 'Lugar' },
           { name: 'description', label: 'Descripción', type: 'textarea' },
           {
@@ -38,7 +33,6 @@ export default async function AdminMisasPage() {
               { value: 'true', label: 'Sí' },
               { value: 'false', label: 'No' },
             ],
-            defaultValue: 'true',
           },
         ]}
       />

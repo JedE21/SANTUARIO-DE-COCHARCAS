@@ -1,16 +1,19 @@
 import { AdminPageHeader } from '@/components/admin/AdminPageHeader';
-import { AdminTable } from '@/components/admin/AdminTable';
-import { AdminSaveForm } from '@/components/admin/AdminSaveForm';
+import { AdminCrud } from '@/components/admin/AdminCrud';
 import { getAllEventsAdmin } from '@/lib/queries-admin';
+
+export const dynamic = 'force-dynamic';
 
 export default async function AdminEventosPage() {
   const events = await getAllEventsAdmin();
 
   return (
     <div className="space-y-8">
-      <AdminPageHeader title="Eventos" description="Administra la agenda de eventos y actividades." />
-      <AdminTable
+      <AdminPageHeader title="Eventos" description="Crea, edita y gestiona los eventos del santuario." />
+      <AdminCrud
+        table="events"
         rows={events}
+        emptyMessage="No hay eventos registrados."
         columns={[
           { key: 'title', label: 'Título' },
           { key: 'location', label: 'Lugar' },
@@ -18,26 +21,21 @@ export default async function AdminEventosPage() {
           {
             key: 'start_date',
             label: 'Fecha',
-            render: (row) => new Date(row.start_date).toLocaleDateString('es-PE'),
+            render: (row) => (row.start_date ? new Date(`${row.start_date}T00:00:00`).toLocaleDateString('es-PE') : '—'),
           },
         ]}
-      />
-      <AdminSaveForm
-        table="events"
-        submitLabel="Crear evento"
         fields={[
           { name: 'title', label: 'Título', required: true },
           { name: 'slug', label: 'Slug', required: true },
           { name: 'description', label: 'Descripción', type: 'textarea', required: true },
+          { name: 'image_url', label: 'Imagen (URL)', type: 'url' },
           { name: 'location', label: 'Lugar' },
           { name: 'start_date', label: 'Fecha de inicio', type: 'date', required: true },
           { name: 'end_date', label: 'Fecha de fin', type: 'date' },
-          { name: 'image_url', label: 'Imagen (URL)', type: 'url' },
           {
             name: 'status',
             label: 'Estado',
             type: 'select',
-            defaultValue: 'draft',
             options: [
               { value: 'draft', label: 'Borrador' },
               { value: 'published', label: 'Publicado' },

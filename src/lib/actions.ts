@@ -267,8 +267,8 @@ export async function trackRequest(code: string): Promise<ActionResult> {
 // Administracion (requieren sesion firmada + service role en servidor)
 // ---------------------------------------------------------------------------
 
-/** Tablas editables desde el CMS. NADA mas puede escribirse por esta via. */
-const ADMIN_TABLES = new Set([
+/** Tablas CMS para roles editoriales (EDITOR, ADMIN_PARROQUIA, etc.). */
+const CMS_TABLES = new Set([
   'site_settings',
   'navigation_items',
   'footer_settings',
@@ -289,7 +289,19 @@ const ADMIN_TABLES = new Set([
   'media',
 ]);
 
-/** Columnas que nunca se aceptan desde un formulario generico. */
+/** TODAS las tablas administrables por el SUPER_ADMIN (sin restricciones). */
+const SUPER_ADMIN_TABLES = new Set([
+  ...CMS_TABLES,
+  'mass_requests',
+  'sacrament_requests',
+  'contact_messages',
+  'newsletter_subscribers',
+  'audit_logs',
+  'profiles',
+  'roles',
+]);
+
+/** Columnas sensibles bloqueadas para roles NO super admin. */
 const BLOCKED_COLUMNS = new Set([
   'tracking_hash',
   'password',
@@ -299,11 +311,19 @@ const BLOCKED_COLUMNS = new Set([
   'admin_notes',
 ]);
 
-function sanitizeAdminPayload(raw: Record<string, unknown>): Record<string, unknown> {
+function tableAllowed(table: string, role: string): boolean {
+  if (role === 'SUPER_ADMIN') return SUPER_ADMIN_TABLES.has(table);
+  return CMS_TABLES.has(table);
+}
+
+function sanitizeAdminPayload(raw: Record<string, unknown>, role: string): Record<string, unknown> {
+  const isSuper = role === 'SUPER_ADMIN';
   const clean: Record<string, unknown> = {};
   for (const [key, value] of Object.entries(raw)) {
-    if (!/^[a-z][a-z0-9_]{0,62}$/.test(key)) continue;
-    if (BLOCKED_COLUMNS.has(key)) continue;
+    // Nombre de columna: solo minusculas/numeros/guion bajo (en cualquier caso).
+    if (!/^[a-z][a-z0-9_]*$/i.test(key)) continue;
+    // Restricciones de columnas aplican solo a roles no SUPER_ADMIN.
+    if (!isSuper && BLOCKED_COLUMNS.has(key)) continue;
     if (typeof value === 'string') clean[key] = value.slice(0, 10000);
     else if (typeof value === 'number' || typeof value === 'boolean') clean[key] = value;
   }
@@ -314,7 +334,10 @@ export async function adminUpsertRow(table: string, payload: Record<string, unkn
   const session = await requireAdminAction();
   if (!session) return { ok: false, error: 'Sesión no válida. Vuelve a iniciar sesión.' };
 
-  if (!ADMIN_TABLES.has(table)) return { ok: false, error: 'Tabla no permitida.' };
+  if (!/^[a-z_]{2,60}$/.test(table)) return { ok: false, error: 'Tabla inválida.' };
+  if (!tableAllowed(table, session.role)) {
+    return { ok: false, error: session.role === 'SUPER_ADMIN' ? 'Tabla desconocida.' : 'Solo el SUPER_ADMIN puede modificar esa tabla.' };
+  }
   if (!hasServiceRole() || !supabaseAdmin) return { ok: false, error: 'Configuración del servidor incompleta (service role).' };
 
   const ip = clientIp();
@@ -322,7 +345,7 @@ export async function adminUpsertRow(table: string, payload: Record<string, unkn
     return { ok: false, error: 'Demasiadas operaciones. Espera un momento.' };
   }
 
-  const clean = sanitizeAdminPayload(payload);
+  const clean = sanitizeAdminPayload(payload, session.role);
   const id = typeof payload.id === 'string' && payload.id.trim() !== '' ? payload.id : undefined;
   delete clean.id;
 
@@ -345,13 +368,19 @@ export async function adminDeleteRow(table: string, id: string): Promise<ActionR
   const session = await requireAdminAction();
   if (!session) return { ok: false, error: 'Sesión no válida. Vuelve a iniciar sesión.' };
 
-  if (!ADMIN_TABLES.has(table)) return { ok: false, error: 'Tabla no permitida.' };
+  if (!/^[a-z_]{2,60}$/.test(table)) return { ok: false, error: 'Tabla inválida.' };
+  if (!tableAllowed(table, session.role)) {
+    return { ok: false, error: session.role === 'SUPER_ADMIN' ? 'Tabla desconocida.' : 'Solo el SUPER_ADMIN puede modificar esa tabla.' };
+  }
   if (!/^[0-9a-f-]{36}$/i.test(id)) return { ok: false, error: 'Identificador inválido.' };
   if (!hasServiceRole() || !supabaseAdmin) return { ok: false, error: 'Configuración del servidor incompleta (service role).' };
 
-  const ip = clientIp();
-  if (!allowAction(`admin:${session.sub}:${ip}`, RATE_LIMITS.adminWrite.limit, RATE_LIMITS.adminWrite.windowMs)) {
-    return { ok: false, error: 'Demasiadas operaciones. Espera un momento.' };
+  // El SUPER_ADMIN no puede eliminarse a si mismo (evita bloqueo total del panel).
+  if (table === 'profiles') {
+    const { data: target } = await supabaseAdmin.from('profiles').select('user_id').eq('id', id).maybeSingle();
+    if ((target as { user_id?: string } | null)?.user_id === session.sub) {
+      return { ok: false, error: 'No puedes eliminar tu propio perfil de administrador.' };
+    }
   }
 
   try {

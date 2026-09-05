@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { Button } from '@/components/ui/button';
-import { updateRequestStatus, type ActionResult } from '@/lib/actions';
+import { updateRequestStatus, adminGenericDelete, type ActionResult } from '@/lib/actions';
 import {
   REQUEST_STATUSES,
   REQUEST_STATUS_LABELS,
@@ -54,6 +54,7 @@ function DetailRow({ request, onSaved }: { request: UnifiedRequest; onSaved: () 
   const [status, setStatus] = React.useState<RequestStatus>(normalizeStatus(request.status));
   const [notes, setNotes] = React.useState(request.admin_notes ?? '');
   const [saving, setSaving] = React.useState(false);
+  const [deleting, setDeleting] = React.useState(false);
   const [result, setResult] = React.useState<ActionResult | null>(null);
 
   async function onSave() {
@@ -63,6 +64,22 @@ function DetailRow({ request, onSaved }: { request: UnifiedRequest; onSaved: () 
     setResult(res);
     setSaving(false);
     if (res.ok) onSaved();
+  }
+
+  async function onDelete() {
+    if (!window.confirm(`¿Eliminar la solicitud ${request.request_number ?? ''}? Esta acción no se puede deshacer.`)) return;
+    setDeleting(true);
+    setResult(null);
+    const fd = new FormData();
+    fd.set('_table', request.kind === 'mass' ? 'mass_requests' : 'sacrament_requests');
+    fd.set('id', request.id);
+    const res = await adminGenericDelete(fd);
+    setDeleting(false);
+    if (res.ok) {
+      onSaved();
+    } else {
+      setResult(res);
+    }
   }
 
   return (
@@ -107,9 +124,17 @@ function DetailRow({ request, onSaved }: { request: UnifiedRequest; onSaved: () 
               />
             </label>
             <div className="flex items-center gap-3">
-              <Button type="button" size="sm" onClick={onSave} disabled={saving}>
+              <Button type="button" size="sm" onClick={onSave} disabled={saving || deleting}>
                 {saving ? 'Guardando…' : 'Guardar cambios'}
               </Button>
+              <button
+                type="button"
+                onClick={onDelete}
+                disabled={saving || deleting}
+                className="rounded-md border border-red-200 px-3 py-2 text-xs font-medium text-red-700 transition-normal hover:bg-red-50 disabled:opacity-50"
+              >
+                {deleting ? 'Eliminando…' : 'Eliminar solicitud'}
+              </button>
               {result?.error && <span className="text-xs text-red-700">{result.error}</span>}
               {result?.ok && !result.error && <span className="text-xs text-green-700">{result.message}</span>}
             </div>

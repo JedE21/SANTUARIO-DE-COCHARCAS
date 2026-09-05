@@ -18,6 +18,8 @@ import {
   fallbackEvents,
   fallbackFaqs,
   fallbackFestivities,
+  fallbackGalleryAlbums,
+  fallbackGalleryItems,
   fallbackHomeSections,
   fallbackMassSchedules,
   fallbackNavigation,
@@ -30,6 +32,8 @@ import type {
   EventItem,
   Faq,
   Festivity,
+  GalleryAlbum,
+  GalleryItem,
   HomeSection,
   MassRequest,
   MassSchedule,
@@ -153,6 +157,24 @@ export async function getAllMassSchedulesAdmin(): Promise<MassSchedule[]> {
     const { data, error } = await db.from('mass_schedules').select('*').order('time', { ascending: true });
     if (error || !data) return fallbackMassSchedules;
     return data as unknown as MassSchedule[];
+  });
+}
+
+/** Todos los albumes de galeria (incluye inactivos). */
+export async function getAllGalleryAlbumsAdmin(): Promise<GalleryAlbum[]> {
+  return withAdminFirst(fallbackGalleryAlbums, async (db) => {
+    const { data, error } = await db.from('gallery_albums').select('*').order('position', { ascending: true });
+    if (error || !data) return fallbackGalleryAlbums;
+    return data as unknown as GalleryAlbum[];
+  });
+}
+
+/** Todas las imagenes de galeria (incluye ocultas). */
+export async function getAllGalleryItemsAdmin(): Promise<GalleryItem[]> {
+  return withAdminFirst(fallbackGalleryItems, async (db) => {
+    const { data, error } = await db.from('gallery_items').select('*').order('position', { ascending: true });
+    if (error || !data) return fallbackGalleryItems;
+    return data as unknown as GalleryItem[];
   });
 }
 
