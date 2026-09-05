@@ -3,7 +3,7 @@
 import * as React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import { usePrefersReducedMotion } from '@/hooks/use-prefers-reduced-motion';
 import { easeOutSoft, fadeUpStrong, heroStagger, lineGrow } from '@/components/motion/variants';
 
@@ -15,19 +15,30 @@ interface HeroCocharcasProps {
 }
 
 /**
- * Hero cinematografico del Santuario: azul profundo + detalles dorados,
- * entrada coreografiada (badge -> titulo -> linea -> descripcion -> CTA).
- * Si hay fotografia del santuario (administrable), se luce con overlay azul.
+ * Hero cinematografico del Santuario: pantalla casi completa, fotografia
+ * protagonista (administrable desde el CMS), composicion editorial
+ * abajo-izquierda, titulo serif grande, layout inspirado en sitios de
+ * arquitectura patrimonial premium. Respeta prefers-reduced-motion.
  */
 export function HeroCocharcas({ badge, title, description, imageUrl }: HeroCocharcasProps) {
   const reduced = usePrefersReducedMotion();
   const hasPhoto = Boolean(imageUrl && !imageUrl.endsWith('.svg'));
+  const ref = React.useRef<HTMLElement>(null);
+
+  // Parallax sutil: la imagen se desplaza un poco mas lento que la pagina
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] });
+  const imageY = useTransform(scrollYProgress, [0, 1], ['0%', '14%']);
+  const textY = useTransform(scrollYProgress, [0, 1], ['0%', '18%']);
 
   return (
-    <section className="relative overflow-hidden bg-azul text-blanco">
-      {/* Fotografia protagonista (si el panel la administra) */}
-      {hasPhoto && (
-        <div className="absolute inset-0">
+    <section ref={ref} className="relative min-h-[94svh] overflow-hidden bg-azul text-blanco">
+      {/* Fotografia protagonista / fondo azul institucional */}
+      <motion.div
+        className="absolute inset-0"
+        style={reduced ? undefined : { y: imageY, scale: 1.08 }}
+        aria-hidden="true"
+      >
+        {hasPhoto ? (
           <Image
             src={imageUrl as string}
             alt={title}
@@ -36,95 +47,102 @@ export function HeroCocharcas({ badge, title, description, imageUrl }: HeroCocha
             sizes="100vw"
             className="object-cover"
           />
-        </div>
-      )}
+        ) : (
+          <div className="h-full w-full bg-gradient-to-br from-azul-oscuro via-azul to-azul-oscuro" />
+        )}
+      </motion.div>
 
-      {/* Overlay editorial azul profundo (contraste + profundidad) */}
+      {/* Overlap editorial: azul profundo + elegancia, sin grises baratos */}
       <div
         aria-hidden="true"
         className={
           hasPhoto
-            ? 'absolute inset-0 bg-gradient-to-b from-azul-oscuro/70 via-azul/60 to-azul-oscuro/90'
-            : 'absolute inset-0 bg-gradient-to-b from-azul-oscuro via-azul to-azul-oscuro'
+            ? 'absolute inset-0 bg-gradient-to-t from-azul-oscuro/95 via-azul/35 to-azul-oscuro/40'
+            : 'absolute inset-0 bg-[radial-gradient(ellipse_at_30%_10%,rgba(201,162,39,0.13),transparent_50%),radial-gradient(ellipse_at_85%_85%,rgba(143,36,52,0.10),transparent_45%)]'
         }
       />
 
-      {/* Resplandor dorado sutil */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(201,162,39,0.14),transparent_55%),radial-gradient(ellipse_at_bottom_left,rgba(143,36,52,0.12),transparent_45%)]"
-      />
-
+      {/* Composicion abajo-izquierda (estilo editorial hoteleria de patrimonio) */}
       <motion.div
-        className="relative mx-auto max-w-4xl px-4 py-28 text-center sm:px-6 sm:py-36 lg:py-40"
+        className="relative flex min-h-[94svh] items-end"
+        style={reduced ? undefined : { y: textY }}
         initial={reduced ? false : 'hidden'}
         animate="visible"
         variants={heroStagger}
       >
-        <motion.p
-          variants={fadeUpStrong}
-          transition={{ duration: 0.6, ease: easeOutSoft }}
-          className="inline-block rounded-full border border-dorado/40 bg-blanco/10 px-4 py-1.5 text-xs font-medium tracking-wider text-dorado-claro backdrop-blur-sm"
-        >
-          {badge}
-        </motion.p>
-
-        <motion.h1
-          variants={fadeUpStrong}
-          transition={{ duration: 0.7, ease: easeOutSoft }}
-          className="mt-6 font-heading text-4xl font-bold leading-tight tracking-tight text-blanco sm:text-6xl"
-        >
-          {title}
-        </motion.h1>
-
-        {/* Linea dorada que crece: detalle de solemnidad */}
-        <motion.div
-          aria-hidden="true"
-          variants={lineGrow}
-          transition={{ duration: 0.5, ease: easeOutSoft }}
-          className="mx-auto mt-7 h-px w-24 origin-center bg-gradient-to-r from-transparent via-dorado to-transparent"
-        />
-
-        <motion.p
-          variants={fadeUpStrong}
-          transition={{ duration: 0.6, ease: easeOutSoft }}
-          className="mx-auto mt-6 max-w-2xl text-lg text-marfil/90 sm:text-xl"
-        >
-          {description}
-        </motion.p>
-
-        <motion.div
-          variants={fadeUpStrong}
-          transition={{ duration: 0.6, ease: easeOutSoft }}
-          className="mt-10 flex flex-wrap justify-center gap-4"
-        >
-          <Link
-            href="/santuario"
-            className="group inline-flex items-center rounded-md bg-dorado px-6 py-3 text-sm font-semibold text-azul-oscuro transition-all duration-300 hover:bg-dorado-claro hover:shadow-[0_10px_24px_-8px_rgba(201,162,39,0.6)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-dorado focus-visible:ring-offset-2 focus-visible:ring-offset-azul"
+        <div className="mx-auto w-full max-w-6xl px-4 pb-24 sm:px-6 lg:px-8">
+          <motion.p
+            variants={fadeUpStrong}
+            transition={{ duration: 0.6, ease: easeOutSoft }}
+            className="eyebrow text-dorado-claro"
           >
-            Conocer el Santuario
-            <span className="ml-2 transition-transform duration-300 group-hover:translate-x-1" aria-hidden="true">
-              →
-            </span>
-          </Link>
-          <Link
-            href="/visita"
-            className="group inline-flex items-center rounded-md border border-marfil/40 px-6 py-3 text-sm font-semibold text-blanco transition-all duration-300 hover:border-dorado/70 hover:bg-blanco/10 hover:text-dorado-claro focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-dorado focus-visible:ring-offset-2 focus-visible:ring-offset-azul"
+            {badge}
+          </motion.p>
+
+          <motion.h1
+            variants={fadeUpStrong}
+            transition={{ duration: 0.8, ease: easeOutSoft }}
+            className="display-xxl mt-6 max-w-3xl text-5xl text-blanco sm:text-6xl lg:text-7xl"
           >
-            Planifica tu visita
-          </Link>
-        </motion.div>
+            {title}
+          </motion.h1>
+
+          <motion.div
+            aria-hidden="true"
+            variants={lineGrow}
+            transition={{ duration: 0.6, ease: easeOutSoft }}
+            className="mt-8 h-px w-28 origin-left bg-dorado"
+          />
+
+          <motion.p
+            variants={fadeUpStrong}
+            transition={{ duration: 0.7, ease: easeOutSoft }}
+            className="mt-6 max-w-xl text-base text-marfil/90 sm:text-lg"
+          >
+            {description}
+          </motion.p>
+
+          <motion.div
+            variants={fadeUpStrong}
+            transition={{ duration: 0.7, ease: easeOutSoft }}
+            className="mt-10 flex flex-wrap gap-4"
+          >
+            <Link
+              href="/santuario"
+              className="group inline-flex items-center rounded-sm bg-dorado px-7 py-3.5 text-[0.8rem] font-semibold uppercase tracking-[0.12em] text-azul-oscuro transition-all duration-300 hover:bg-dorado-claro focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-dorado focus-visible:ring-offset-2 focus-visible:ring-offset-azul"
+            >
+              Conocer el Santuario
+              <span className="ml-2.5 transition-transform duration-300 group-hover:translate-x-1" aria-hidden="true">
+                →
+              </span>
+            </Link>
+            <Link
+              href="/visita"
+              className="group inline-flex items-center rounded-sm border border-marfil/40 px-7 py-3.5 text-[0.8rem] font-semibold uppercase tracking-[0.12em] text-blanco transition-all duration-300 hover:border-dorado hover:text-dorado-claro focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-dorado focus-visible:ring-offset-2 focus-visible:ring-offset-azul"
+            >
+              Planifica tu visita
+            </Link>
+          </motion.div>
+        </div>
       </motion.div>
 
-      {/* Indicador de scroll sutil */}
+      {/* Indicador de scroll sobrio */}
       <motion.div
         aria-hidden="true"
         initial={reduced ? false : { opacity: 0 }}
-        animate={{ opacity: 0.7 }}
-        transition={{ delay: 1.4, duration: 0.8 }}
-        className="absolute bottom-6 left-1/2 hidden -translate-x-1/2 sm:block"
+        animate={{ opacity: 0.75 }}
+        transition={{ delay: 1.6, duration: 1 }}
+        className="absolute bottom-8 right-6 hidden flex-col items-center gap-3 sm:flex lg:right-10"
       >
-        <div className="h-8 w-px bg-gradient-to-b from-dorado/0 via-dorado/80 to-dorado/0" />
+        <span className="text-[0.65rem] font-medium uppercase tracking-[0.3em] text-marfil/70 [writing-mode:vertical-rl]">
+          Descubre
+        </span>
+        <motion.span
+          className="h-10 w-px bg-dorado/70"
+          animate={reduced ? undefined : { scaleY: [0.4, 1, 0.4] }}
+          transition={reduced ? undefined : { duration: 2.4, repeat: Infinity, ease: 'easeInOut' }}
+          style={{ transformOrigin: 'top' }}
+        />
       </motion.div>
     </section>
   );

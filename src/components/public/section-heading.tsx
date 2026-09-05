@@ -22,12 +22,12 @@ export const SectionHeading = ({
   const alignmentClass = textAlign === 'left' ? 'text-left' : textAlign === 'right' ? 'text-right' : 'text-center';
 
   return (
-    <div className={`space-y-4 ${alignmentClass} ${className}`}>
-      {eyebrow && <span className="text-xs font-medium tracking-widest text-carmesi uppercase">{eyebrow}</span>}
-      <h2 className="font-heading text-3xl font-bold tracking-tight text-azul sm:text-4xl">{title}</h2>
+    <div className={`space-y-5 ${alignmentClass} ${className}`}>
+      {eyebrow && <span className="eyebrow text-carmesi">{eyebrow}</span>}
+      <h2 className="font-heading text-4xl font-semibold leading-[1.08] tracking-tight text-azul sm:text-5xl">{title}</h2>
       {withDivider && <GoldDivider align={textAlign === 'center' ? 'center' : 'left'} />}
       {description && (
-        <p className={`text-muted-foreground max-w-2xl ${textAlign === 'center' ? 'mx-auto' : ''}`}>
+        <p className={`mx-auto max-w-2xl text-base leading-relaxed text-muted-foreground ${textAlign === 'center' ? 'mx-auto' : ''}`}>
           {description}
         </p>
       )}

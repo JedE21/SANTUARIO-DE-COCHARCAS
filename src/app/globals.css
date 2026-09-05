@@ -124,6 +124,30 @@ html {
   background: linear-gradient(90deg, transparent, var(--dorado), transparent);
 }
 
+/* Hairlines editoriales (finas, institucionales) */
+.hairline {
+  background: color-mix(in srgb, var(--piedra) 35%, transparent);
+}
+
+.hairline-dorada {
+  background: color-mix(in srgb, var(--dorado) 55%, transparent);
+}
+
+/* Tipografia display (titulos protagonistas estilo editorial) */
+.display-xxl {
+  font-family: var(--font-title);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  line-height: 1.04;
+}
+
+.eyebrow {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+}
+
 /* Enlace con subrayado dorado deslizante (microinteraccion editorial) */
 .link-editorial {
   position: relative;
@@ -204,16 +228,16 @@ h6 {
   }
 }
 
-/* Section spacing */
+/* Section spacing (editorial: mas aire) */
 .section {
-  padding-top: 4rem;
-  padding-bottom: 4rem;
+  padding-top: 5rem;
+  padding-bottom: 5rem;
 }
 
 @media (min-width: 768px) {
   .section {
-    padding-top: 6rem;
-    padding-bottom: 6rem;
+    padding-top: 7rem;
+    padding-bottom: 7rem;
   }
 }
 

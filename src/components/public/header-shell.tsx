@@ -50,12 +50,14 @@ export function HeaderShell({ siteName, navItems, className = '' }: HeaderShellP
 
   return (
     <header
-      className={`${className} sticky top-0 z-40 border-b border-blanco/10 bg-azul/95 backdrop-blur-md transition-[box-shadow] duration-300 ${
-        scrolled ? 'shadow-[0_10px_30px_-12px_rgba(15,37,64,0.45)]' : ''
+      className={`${className} sticky top-0 z-40 border-b transition-all duration-300 ${
+        scrolled
+          ? 'border-blanco/10 bg-azul/95 shadow-[0_10px_30px_-12px_rgba(15,37,64,0.45)] backdrop-blur-md'
+          : 'border-blanco/10 bg-azul'
       }`}
     >
       <div className="px-4 sm:px-6 lg:px-8">
-        <div className={`flex flex-wrap items-center justify-between transition-all duration-300 ${scrolled ? 'py-2.5' : 'py-4'}`}>
+        <div className={`flex flex-wrap items-center justify-between transition-all duration-300 ${scrolled ? 'py-2.5' : 'py-5'}`}>
           <div className="flex items-center space-x-3">
             <div className="flex h-9 w-9 items-center justify-center rounded-full border border-dorado/60 bg-dorado/15">
               <span className="font-heading text-xs font-semibold tracking-wide text-dorado-claro">SC</span>
@@ -68,7 +70,7 @@ export function HeaderShell({ siteName, navItems, className = '' }: HeaderShellP
             </Link>
           </div>
 
-          <nav className="hidden flex-1 items-center justify-center space-x-6 lg:flex" aria-label="Principal">
+          <nav className="hidden flex-1 items-center justify-center space-x-7 lg:flex" aria-label="Principal">
             {navItems.map((item) => {
               const active = isActive(item.href);
               return (
@@ -76,8 +78,8 @@ export function HeaderShell({ siteName, navItems, className = '' }: HeaderShellP
                   key={item.href}
                   href={item.href}
                   aria-current={active ? 'page' : undefined}
-                  className={`group relative py-1 text-sm font-medium transition-normal ${
-                    active ? 'text-dorado-claro' : 'text-marfil/85 hover:text-blanco'
+                  className={`group relative py-1 text-[0.8rem] font-medium uppercase tracking-[0.14em] transition-normal ${
+                    active ? 'text-dorado-claro' : 'text-marfil/80 hover:text-blanco'
                   }`}
                 >
                   {item.label}

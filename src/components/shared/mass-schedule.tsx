@@ -29,27 +29,29 @@ export const MassSchedule = ({
   return (
     <div className={className}>
       {title && (
-        <h2 className="text-2xl font-bold text-foreground mb-6">
+        <h2 className="font-heading text-2xl font-bold text-azul mb-6">
           {title}
         </h2>
       )}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      {/* Lista editorial: dia | hora | lugar divididos por hairlines */}
+      <div className="grid gap-x-10 md:grid-cols-2">
         {items.map((item) => (
-          <div key={item.day_of_week + item.time} className="bg-blanco/50 border border-blanco/10 rounded-lg p-4">
-            <div className="flex items-center gap-3 mb-2">
-              <div className="h-8 w-8 flex items-center justify-center bg-dorado/10 rounded-md">
-                <span className="text-dorado font-semibold text-xs">
-                  {item.day_of_week.charAt(0).toUpperCase() + item.day_of_week.slice(1)}
-                </span>
-              </div>
-              <span className="text-lg font-semibold text-foreground">{item.time}</span>
+          <div
+            key={item.day_of_week + item.time}
+            className="flex items-center justify-between gap-4 border-b border-piedra/20 py-4 transition-colors duration-300 hover:border-dorado/50"
+          >
+            <div>
+              <p className="font-heading text-lg font-semibold text-azul">{item.day_of_week}</p>
+              {item.place ? (
+                <p className="mt-0.5 text-xs uppercase tracking-wider text-muted-foreground">{item.place}</p>
+              ) : null}
             </div>
-            {item.place && (
-              <p className="text-sm text-muted-foreground mb-2">{item.place}</p>
-            )}
-            {item.description && (
-              <p className="text-sm text-muted-foreground">{item.description}</p>
-            )}
+            <div className="text-right">
+              <p className="font-heading text-2xl font-bold tabular-nums text-carmesi">{item.time.slice(0, 5)}</p>
+              {item.description ? (
+                <p className="mt-0.5 text-xs text-muted-foreground">{item.description}</p>
+              ) : null}
+            </div>
           </div>
         ))}
       </div>

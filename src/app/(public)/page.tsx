@@ -114,27 +114,35 @@ export default async function Home() {
               }
             />
           </Reveal>
-          <Stagger className="mt-12 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
-            {featuredLinks.map((item, index) => (
-              <Card key={item.href} className="h-full p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
-                <div className="space-y-4">
-                  <div className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-dorado/40 bg-dorado/10 text-dorado-oscuro">
-                    <span className="text-sm font-semibold">{String(index + 1).padStart(2, '0')}</span>
-                  </div>
-                  <div>
-                    <h3 className="text-xl font-semibold text-azul">{item.title}</h3>
-                    <p className="mt-2 text-sm text-muted-foreground">{item.description}</p>
-                  </div>
-                  <Link href={item.href} className="link-editorial inline-flex items-center text-sm font-medium text-primary">
-                    Ver más
-                    <span className="ml-2 transition-transform duration-300 group-hover:translate-x-1" aria-hidden="true">
-                      →
+          <Reveal className="mt-14">
+            <div className="divide-y divide-piedra/25 border-y border-piedra/25">
+              {featuredLinks.map((item, index) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className="group flex items-start justify-between gap-8 py-8 transition-colors duration-300 hover:bg-blanco/60 sm:py-10"
+                >
+                  <div className="flex items-baseline gap-6 sm:gap-10">
+                    <span className="font-heading text-2xl font-semibold text-dorado-oscuro/60 transition-normal group-hover:text-dorado sm:text-3xl">
+                      {String(index + 1).padStart(2, '0')}
                     </span>
-                  </Link>
-                </div>
-              </Card>
-            ))}
-          </Stagger>
+                    <div>
+                      <h3 className="font-heading text-2xl font-semibold text-azul transition-normal group-hover:text-carmesi sm:text-3xl">
+                        {item.title}
+                      </h3>
+                      <p className="mt-2 max-w-xl text-sm text-muted-foreground sm:text-base">{item.description}</p>
+                    </div>
+                  </div>
+                  <span
+                    aria-hidden="true"
+                    className="mt-2 text-2xl text-piedra transition-all duration-300 group-hover:-rotate-45 group-hover:text-carmesi"
+                  >
+                    →
+                  </span>
+                </Link>
+              ))}
+            </div>
+          </Reveal>
         </Container>
       </Section>
 
