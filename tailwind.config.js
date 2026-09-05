@@ -6,12 +6,16 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        marfil: '#F7F3EA',
+        marfil: '#F7F2E7',
         blanco: '#FFFFFF',
-        dorado: '#B89452',
+        dorado: '#C9A227',
         piedra: '#8C8173',
+        azul: '#17365D',
+        'azul-oscuro': '#0F2540',
+        carmesi: '#8F2434',
+        'carmesi-oscuro': '#721D2B',
         'verde-andes': '#34483B',
-        carbone: '#24231F',
+        carbone: '#1A2436',
         background: 'var(--color-background)',
         foreground: 'var(--color-foreground)',
         primary: 'var(--color-primary)',

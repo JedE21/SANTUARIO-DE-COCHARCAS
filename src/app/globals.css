@@ -17,12 +17,15 @@ html {
 :root {
   --font-title: 'Cormorant Garamond', Georgia, serif;
   --font-body: 'Inter', 'Segoe UI', sans-serif;
-  --marfil: #F7F3EA;
+  --marfil: #F7F2E7;
   --blanco: #FFFFFF;
-  --dorado: #B89452;
+  --dorado: #C9A227;
   --piedra: #8C8173;
+  --azul: #17365D;
+  --azul-oscuro: #0F2540;
+  --carmesi: #8F2434;
   --verde-andes: #34483B;
-  --carbone: #24231F;
+  --carbone: #1A2436;
 }
 
 /* Custom utilities - keeping existing ones for backward compatibility */
@@ -84,6 +87,64 @@ html {
 
 .border-carbone {
   border-color: var(--carbone);
+}
+
+/* --- Identidad Cocharcas: utilidades refinadas --- */
+.bg-azul {
+  background-color: var(--azul);
+}
+
+.bg-azul-oscuro {
+  background-color: var(--azul-oscuro);
+}
+
+.bg-carmesi {
+  background-color: var(--carmesi);
+}
+
+.text-azul {
+  color: var(--azul);
+}
+
+.text-carmesi {
+  color: var(--carmesi);
+}
+
+.border-azul {
+  border-color: var(--azul);
+}
+
+/* Sombra patrimonial suave (superficies elegantes, nunca duras) */
+.shadow-suave {
+  box-shadow: 0 12px 32px -12px rgba(23, 54, 93, 0.18), 0 4px 10px -6px rgba(23, 54, 93, 0.08);
+}
+
+/* Linea dorada decorativa bajo titulos (patrimonio) */
+.linea-dorada {
+  background: linear-gradient(90deg, transparent, var(--dorado), transparent);
+}
+
+/* Enlace con subrayado dorado deslizante (microinteraccion editorial) */
+.link-editorial {
+  position: relative;
+}
+
+.link-editorial::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 100%;
+  height: 1px;
+  background-color: var(--dorado);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 250ms ease-out;
+}
+
+.link-editorial:hover::after,
+.link-editorial:focus-visible::after {
+  transform: scaleX(1);
 }
 
 /* Smooth scroll */

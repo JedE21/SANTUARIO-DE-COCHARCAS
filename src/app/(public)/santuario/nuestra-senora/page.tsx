@@ -55,8 +55,8 @@ export default async function VirginPage() {
             ]}
           />
 
-          {/* Page Header - Contemplative style */}
-          <section className="relative">
+          {/* Page Header - solemne: azul profundo + dorado */}
+          <section className="relative overflow-hidden rounded-xl">
             <div className="absolute inset-0">
               {virginInfo.imageUrl ? (
                 <Image
@@ -68,27 +68,30 @@ export default async function VirginPage() {
                   className="object-cover"
                 />
               ) : (
-                <div className="h-full w-full bg-gradient-to-b from-black/30 to-black/50" aria-hidden="true"></div>
+                <div className="h-full w-full bg-gradient-to-br from-azul-oscuro via-azul to-azul-oscuro" aria-hidden="true" />
               )}
             </div>
 
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+            {/* Overlay editorial azul + resplandor dorado sutil */}
+            <div className="absolute inset-0 bg-gradient-to-t from-azul-oscuro/90 via-azul/50 to-transparent" aria-hidden="true" />
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(201,162,39,0.12),transparent_60%)]" aria-hidden="true" />
 
-            <div className="relative z-10 flex flex-col items-center justify-center text-center min-h-[50vh] px-4 sm:px-6 lg:px-8">
+            <div className="relative z-10 flex min-h-[52vh] flex-col items-center justify-center px-4 text-center sm:px-6 lg:px-8">
               <FadeIn delay={0} duration={0.5}>
-                <p className="text-xs font-medium text-dorado-claro tracking-wider mb-2">
-                  NUESTRA SEÑORA DE COCHARCAS
+                <p className="mb-3 text-xs font-medium uppercase tracking-[0.25em] text-dorado-claro">
+                  Nuestra Señora de Cocharcas
                 </p>
               </FadeIn>
 
-              <FadeIn delay={0.2} duration={0.5}>
-                <h1 className="text-4xl font-bold text-blanco sm:text-5xl mb-2 leading-tight">
+              <FadeIn delay={0.12} duration={0.6}>
+                <h1 className="font-heading text-4xl font-bold leading-tight text-blanco sm:text-5xl">
                   {virginInfo.title}
                 </h1>
               </FadeIn>
 
-              <FadeIn delay={0.4} duration={0.5}>
-                <p className="text-xl text-blanco/90 max-w-2xl mb-6 sm:text-2xl">
+              <FadeIn delay={0.24} duration={0.6}>
+                <div className="linea-dorada mx-auto mt-5 h-px w-24" aria-hidden="true" />
+                <p className="mx-auto mt-4 max-w-2xl text-xl text-marfil/90 sm:text-2xl">
                   {virginInfo.description}
                 </p>
               </FadeIn>
@@ -156,7 +159,7 @@ export default async function VirginPage() {
                   <div className="mt-8">
                     <Link
                       href="/festividades"
-                      className="inline-flex items-center rounded-md bg-dorado-oscuro px-4 py-2 text-sm font-medium text-blanco transition-normal hover:bg-dorado-oscuro/90"
+                      className="inline-flex items-center rounded-md bg-azul px-5 py-2.5 text-sm font-medium text-blanco transition-normal hover:bg-azul-oscuro"
                     >
                       Ver festividades
                       <span className="ml-2" aria-hidden="true">→</span>
@@ -188,26 +191,28 @@ export default async function VirginPage() {
 
             {/* Call to Action */}
             <FadeIn delay={1.0} duration={0.5}>
-              <Section className="bg-dorado-oscuro">
-                <Container className="text-center py-12">
-                  <h2 className="text-3xl font-bold text-blanco mb-4">
+              <Section className="relative overflow-hidden rounded-xl bg-azul-oscuro">
+                <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-dorado to-transparent" aria-hidden="true" />
+                <Container className="py-14 text-center">
+                  <h2 className="mb-4 font-heading text-3xl font-bold text-blanco">
                     Ven a conocer su presencia
                   </h2>
-                  <p className="text-xl text-blanco/90 mb-6 max-w-2xl mx-auto">
+                  <div className="linea-dorada mx-auto mb-6 h-px w-20" aria-hidden="true" />
+                  <p className="mx-auto mb-8 max-w-2xl text-xl text-marfil/85">
                     Experimenta la paz y la bendición que muchos han encontrado
                     ante la imagen de Nuestra Señora de Cocharcas.
                   </p>
-                  <div className="flex flex-wrap gap-4 justify-center">
+                  <div className="flex flex-wrap justify-center gap-4">
                     <Link
                       href="/fe/solicitar-misa"
-                      className="flex items-center rounded-md bg-blanco px-6 py-3 text-sm font-medium text-dorado-oscuro transition-normal hover:bg-marfil"
+                      className="inline-flex items-center rounded-md bg-dorado px-6 py-3 text-sm font-semibold text-azul-oscuro transition-all duration-300 hover:bg-dorado-claro"
                     >
                       Solicitar una misa
                       <span className="ml-2" aria-hidden="true">→</span>
                     </Link>
                     <Link
                       href="/contacto"
-                      className="flex items-center rounded-md border border-blanco bg-transparent px-6 py-3 text-sm font-medium text-blanco transition-normal hover:bg-blanco/10"
+                      className="inline-flex items-center rounded-md border border-marfil/40 px-6 py-3 text-sm font-medium text-blanco transition-all duration-300 hover:border-dorado/70 hover:bg-blanco/10"
                     >
                       Contactar al santuario
                       <span className="ml-2" aria-hidden="true">→</span>

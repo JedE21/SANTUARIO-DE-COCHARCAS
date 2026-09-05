@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { motion } from 'framer-motion';
+import { motion, type Variants } from 'framer-motion';
 import { usePrefersReducedMotion } from '@/hooks/use-prefers-reduced-motion';
 import { fadeUp, revealTransition } from './variants';
 
@@ -11,6 +11,8 @@ interface RevealProps {
   delay?: number;
   duration?: number;
   once?: boolean;
+  /** Variante de entrada (fadeUp por defecto; ver variants.ts). */
+  variant?: Variants;
 }
 
 export const Reveal = ({
@@ -19,6 +21,7 @@ export const Reveal = ({
   delay = 0,
   duration = 0.55,
   once = true,
+  variant = fadeUp,
 }: RevealProps) => {
   const reduced = usePrefersReducedMotion();
 
@@ -32,7 +35,7 @@ export const Reveal = ({
       initial="hidden"
       whileInView="visible"
       viewport={{ once, amount: 0.18, margin: '0px 0px -40px 0px' }}
-      variants={fadeUp}
+      variants={variant}
       transition={{ ...revealTransition, duration, delay }}
     >
       {children}

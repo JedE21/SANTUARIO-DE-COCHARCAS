@@ -27,17 +27,18 @@ export const HistoricalTimeline = ({ items, className = '' }: HistoricalTimeline
 
   return (
     <div className={`${className} relative`}>
-      <div className="absolute inset-y-0 left-3 w-0.5 bg-piedra/25" aria-hidden="true" />
+      {/* Linea cronologica: piedra con toque dorado */}
+      <div className="absolute inset-y-0 left-3 w-px bg-gradient-to-b from-dorado/70 via-piedra/40 to-dorado/30" aria-hidden="true" />
       <ol className="relative space-y-8 pl-8 pt-4">
         {items.map((item) => (
           <li key={`${item.year}-${item.title}`}>
             <Reveal>
-              <div className="absolute -left-0.5 mt-2 flex h-5 w-5 items-center justify-center">
-                <span className="h-3 w-3 rounded-full bg-primary ring-4 ring-marfil" />
+              <div className="absolute -left-0 mt-1.5 flex h-5 w-5 items-center justify-center" aria-hidden="true">
+                <span className="h-2.5 w-2.5 rounded-full bg-dorado ring-4 ring-marfil" />
               </div>
-              <article className="rounded-lg border border-border/70 bg-card p-6 shadow-sm">
-                <p className="text-xs font-medium uppercase tracking-wider text-primary">{item.year}</p>
-                <h3 className="mt-1 text-lg font-semibold text-foreground">{item.title}</h3>
+              <article className="rounded-lg border border-border/70 bg-card p-6 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md">
+                <p className="font-heading text-2xl font-bold leading-none text-carmesi">{item.year}</p>
+                <h3 className="mt-2 text-lg font-semibold text-azul">{item.title}</h3>
                 <p className="mt-2 text-muted-foreground">{item.description}</p>
               </article>
             </Reveal>

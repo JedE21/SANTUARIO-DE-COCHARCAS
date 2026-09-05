@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { GoldDivider } from '@/components/motion';
 
 interface PageHeaderProps {
   title: string;
@@ -16,15 +17,16 @@ export const PageHeader = ({
   return (
     <div className={`${className} space-y-4`}>
       {eyebrow && (
-        <p className="text-xs font-medium text-primary tracking-wider">
+        <p className="text-xs font-medium uppercase tracking-[0.25em] text-carmesi">
           {eyebrow}
         </p>
       )}
-      <h1 className="text-3xl font-bold text-foreground sm:text-4xl">
+      <h1 className="font-heading text-3xl font-bold tracking-tight text-azul sm:text-4xl">
         {title}
       </h1>
+      <GoldDivider />
       {description && (
-        <p className="text-muted-foreground max-w-2xl mx-auto">
+        <p className="text-muted-foreground mx-auto max-w-2xl">
           {description}
         </p>
       )}

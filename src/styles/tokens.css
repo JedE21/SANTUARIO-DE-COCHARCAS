@@ -1,31 +1,38 @@
 :root {
-  /* Primary Color Palette */
-  --color-marfil: #F7F3EA;
+  /* ------------------------------------------------------------------
+     Paleta Santuario de Cocharcas (identidad de la Virgen de Cocharcas)
+       azul profundo (manto) + carmesi (vestido) + dorado (ornamentacion)
+       + marfil (patrimonio) + piedra colonial
+     ------------------------------------------------------------------ */
+  --color-marfil: #F7F2E7;
   --color-blanco: #FFFFFF;
-  --color-dorado: #B89452;
+  --color-dorado: #C9A227;
   --color-piedra: #8C8173;
-  --color-verde-andes: #34483B;
-  --color-carbone: #24231F;
+  --color-azul: #17365D;
+  --color-azul-oscuro: #0F2540;
+  --color-carmesi: #8F2434;
+  --color-carmesi-oscuro: #721D2B;
+  --color-carbone: #1A2436;
 
   /* Variantes accesibles (contraste WCAG AA) */
-  /* Piedra oscurecida: ratio 5.2:1 sobre marfil (antes 3.4:1 — insuficiente) */
-  --color-muted-foreground: #6F6455;
-  /* Dorado envejecido oscuro: ratio 5.1:1 sobre marfil para texto y botones */
-  --color-dorado-oscuro: #8A6A28;
-  /* Dorado claro para texto/acentos sobre fondos oscuros (verde andes, carbón) */
-  --color-dorado-claro: #D9BE8C;
+  /* Piedra oscurecida: ratio AA sobre marfil */
+  --color-muted-foreground: #5C5648;
+  /* Dorado oscuro para texto/acentos sobre marfil */
+  --color-dorado-oscuro: #8A6D14;
+  /* Dorado claro legible sobre fondos oscuros (azul/carbone) */
+  --color-dorado-claro: #E3C565;
 
   /* Semantic Tokens */
   --color-background: var(--color-marfil);
   --color-foreground: var(--color-carbone);
-  --color-primary: var(--color-dorado-oscuro);
-  --color-secondary: var(--color-verde-andes);
+  --color-primary: var(--color-azul);
+  --color-secondary: var(--color-carmesi);
   --color-accent: var(--color-dorado);
   --color-muted: var(--color-piedra);
   --color-border: var(--color-piedra);
   --color-card: var(--color-blanco);
 
-  /* Typography */
+  /* Typography (conservadas: Cormorant Garamond + Inter) */
   --font-title: 'Cormorant Garamond', serif;
   --font-body: 'Inter', sans-serif;
 
@@ -50,7 +57,7 @@
   --spacing-28: 112px;
   --spacing-32: 128px;
 
-  /* Border Radius */
+  /* Border Radius (institucional: moderado) */
   --radius-none: 0px;
   --radius-sm: 4px;
   --radius-md: 6px;
@@ -58,11 +65,11 @@
   --radius-xl: 12px;
   --radius-full: 9999px;
 
-  /* Shadows */
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  /* Shadows (suaves, patrimoniales) */
+  --shadow-sm: 0 1px 2px 0 rgba(23, 54, 93, 0.06);
+  --shadow-md: 0 4px 10px -2px rgba(23, 54, 93, 0.10), 0 2px 4px -1px rgba(23, 54, 93, 0.05);
+  --shadow-lg: 0 12px 24px -6px rgba(23, 54, 93, 0.16), 0 4px 8px -2px rgba(23, 54, 93, 0.07);
+  --shadow-xl: 0 22px 40px -8px rgba(23, 54, 93, 0.22), 0 8px 12px -5px rgba(23, 54, 93, 0.08);
 
   /* Transitions */
   --transition-fast: 150ms ease-in-out;

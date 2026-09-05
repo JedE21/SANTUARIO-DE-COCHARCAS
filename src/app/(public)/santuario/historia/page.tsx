@@ -153,7 +153,7 @@ export default async function HistoriaPage() {
                   </p>
                   <Link
                     href="/santuario/archivo-historico"
-                    className="mt-6 inline-flex items-center rounded-md bg-dorado-oscuro px-4 py-2 text-sm font-medium text-blanco transition-normal hover:bg-dorado-oscuro/90"
+                    className="mt-6 inline-flex items-center rounded-md bg-azul px-5 py-2.5 text-sm font-medium text-blanco transition-all duration-300 hover:bg-azul-oscuro"
                   >
                     Visitar el archivo histórico
                     <span className="ml-2" aria-hidden="true">→</span>
@@ -176,21 +176,21 @@ export default async function HistoriaPage() {
                   <div className="flex flex-wrap justify-center gap-4">
                     <Link
                       href="/santuario/nuestra-senora"
-                      className="flex items-center rounded-md bg-dorado-oscuro px-6 py-3 text-sm font-medium text-blanco transition-normal hover:bg-dorado-oscuro/90"
+                      className="inline-flex items-center rounded-md bg-azul px-6 py-3 text-sm font-medium text-blanco transition-all duration-300 hover:bg-azul-oscuro"
                     >
                       Nuestra Señora de Cocharcas
                       <span className="ml-2" aria-hidden="true">→</span>
                     </Link>
                     <Link
                       href="/santuario/arquitectura"
-                      className="flex items-center rounded-md bg-dorado-oscuro px-6 py-3 text-sm font-medium text-blanco transition-normal hover:bg-dorado-oscuro/90"
+                      className="inline-flex items-center rounded-md bg-azul px-6 py-3 text-sm font-medium text-blanco transition-all duration-300 hover:bg-azul-oscuro"
                     >
                       Arquitectura y Detalles
                       <span className="ml-2" aria-hidden="true">→</span>
                     </Link>
                     <Link
                       href="/santuario/patrimonio"
-                      className="flex items-center rounded-md bg-dorado-oscuro px-6 py-3 text-sm font-medium text-blanco transition-normal hover:bg-dorado-oscuro/90"
+                      className="inline-flex items-center rounded-md bg-azul px-6 py-3 text-sm font-medium text-blanco transition-all duration-300 hover:bg-azul-oscuro"
                     >
                       Patrimonio Cultural
                       <span className="ml-2" aria-hidden="true">→</span>

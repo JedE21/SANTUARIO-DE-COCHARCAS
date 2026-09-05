@@ -8,17 +8,17 @@ export async function AnnouncementBar() {
   if (!latest?.title) return null;
 
   return (
-    <div className="border-b border-dorado/20 bg-verde-andes text-marfil">
+    <div className="border-b border-dorado/30 bg-azul text-marfil">
       <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-center gap-x-3 gap-y-1 px-4 py-2 text-center text-sm sm:px-6 lg:px-8">
         <span className="font-medium text-dorado" aria-hidden="true">
           ●
         </span>
         <p className="text-marfil/90">
-          <span className="font-medium text-white">{latest.title}</span>
+          <span className="font-medium text-blanco">{latest.title}</span>
           {latest.content ? <span className="hidden sm:inline"> — {latest.content}</span> : null}
         </p>
         {latest.link_url ? (
-          <Link href={latest.link_url} className="font-medium text-dorado-claro underline underline-offset-2 hover:text-blanco">
+          <Link href={latest.link_url} className="font-medium text-dorado-claro underline underline-offset-2 transition-normal hover:text-blanco">
             Ver más
           </Link>
         ) : null}

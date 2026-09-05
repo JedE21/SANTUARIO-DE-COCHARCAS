@@ -5,3 +5,4 @@ export { StaggerItem } from './StaggerItem';
 export { Parallax } from './Parallax';
 export { HoverLift } from './HoverLift';
 export { PageFade } from './PageFade';
+export { GoldDivider } from './GoldDivider';

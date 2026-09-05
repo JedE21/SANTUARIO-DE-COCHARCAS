@@ -2,7 +2,8 @@ import Image from 'next/image';
 import type { Metadata } from 'next';
 import { CalendarDays, ImageIcon, Newspaper } from 'lucide-react';
 import { Section, Container, SectionHeading, Link, Button, Card, Badge, EmptyState } from '@/components/public';
-import { FadeIn, Stagger, StaggerItem, Parallax } from '@/components/motion';
+import { FadeIn, Stagger, StaggerItem, Reveal } from '@/components/motion';
+import { HeroCocharcas } from '@/components/public/hero-cocharcas';
 import { MassSchedule } from '@/components/shared/mass-schedule';
 import { JsonLd } from '@/components/shared/json-ld';
 import { absoluteUrl, defaultOgImages, ogImagePath, siteDescription, siteName, siteUrl } from '@/lib/seo';
@@ -93,64 +94,40 @@ export default async function Home() {
   return (
     <main>
       <JsonLd data={jsonLd} />
-      <section className="relative overflow-hidden bg-gradient-to-br from-carbone via-verde-andes to-dorado text-white">
-        <Parallax className="pointer-events-none absolute inset-0" offset={28}>
-          <div className="absolute -inset-y-12 inset-x-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.14),transparent_35%),radial-gradient(circle_at_bottom_left,rgba(255,255,255,0.10),transparent_30%)]" />
-        </Parallax>
-        <Container className="relative py-24 sm:py-32">
-          <div className="mx-auto max-w-4xl text-center">
-            <FadeIn>
-              <Badge className="mb-6 border-white/20 bg-white/10 text-white">
-                {settings.site_name || 'Santuario de Nuestra Señora de Cocharcas'}
-              </Badge>
-            </FadeIn>
-            <FadeIn delay={0.1}>
-              <h1 className="text-4xl font-bold tracking-tight sm:text-6xl">
-                {hero?.title || 'Fe, historia y tradición en el corazón de los Andes'}
-              </h1>
-            </FadeIn>
-            <FadeIn delay={0.2}>
-              <p className="mx-auto mt-6 max-w-2xl text-lg text-white/85 sm:text-xl">
-                {hero?.description ||
-                  'Un espacio vivo de peregrinación, memoria y encuentro comunitario en Cocharcas, Apurímac.'}
-              </p>
-            </FadeIn>
-            <FadeIn delay={0.3}>
-              <div className="mt-10 flex flex-wrap justify-center gap-4">
-                <Button asChild>
-                  <Link href="/santuario">Conocer el Santuario</Link>
-                </Button>
-                <Button asChild variant="outline">
-                  <Link href="/visita">Planifica tu visita</Link>
-                </Button>
-              </div>
-            </FadeIn>
-          </div>
-        </Container>
-      </section>
+      <HeroCocharcas
+        badge={settings.site_name || 'Santuario de Nuestra Señora de Cocharcas'}
+        title={hero?.title || 'Fe, historia y tradición en el corazón de los Andes'}
+        description={
+          hero?.description ||
+          'Un espacio vivo de peregrinación, memoria y encuentro comunitario en Cocharcas, Apurímac.'
+        }
+        imageUrl={hero?.image_url}
+      />
 
       <Section className="bg-background">
         <Container>
-          <SectionHeading
-            title={intro?.title || 'Explora el santuario'}
-            description={
-              intro?.description || 'Accede a los contenidos principales del sitio desde una sola vista.'
-            }
-          />
-          <Stagger className="mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+          <Reveal>
+            <SectionHeading
+              title={intro?.title || 'Explora el santuario'}
+              description={
+                intro?.description || 'Accede a los contenidos principales del sitio desde una sola vista.'
+              }
+            />
+          </Reveal>
+          <Stagger className="mt-12 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
             {featuredLinks.map((item, index) => (
-              <Card key={item.href} className="h-full p-6">
+              <Card key={item.href} className="h-full p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
                 <div className="space-y-4">
-                  <div className="inline-flex h-10 w-10 items-center justify-center rounded-md bg-primary/10 text-primary">
+                  <div className="inline-flex h-10 w-10 items-center justify-center rounded-md border border-dorado/40 bg-dorado/10 text-dorado-oscuro">
                     <span className="text-sm font-semibold">{String(index + 1).padStart(2, '0')}</span>
                   </div>
                   <div>
-                    <h3 className="text-xl font-semibold text-foreground">{item.title}</h3>
+                    <h3 className="text-xl font-semibold text-azul">{item.title}</h3>
                     <p className="mt-2 text-sm text-muted-foreground">{item.description}</p>
                   </div>
-                  <Link href={item.href} className="inline-flex items-center text-sm font-medium text-primary">
+                  <Link href={item.href} className="link-editorial inline-flex items-center text-sm font-medium text-primary">
                     Ver más
-                    <span className="ml-2" aria-hidden="true">
+                    <span className="ml-2 transition-transform duration-300 group-hover:translate-x-1" aria-hidden="true">
                       →
                     </span>
                   </Link>
@@ -163,10 +140,12 @@ export default async function Home() {
 
       <Section className="bg-marfil">
         <Container>
-          <SectionHeading
-            title="Horarios de celebración"
-            description="Una referencia rápida a la vida litúrgica del santuario."
-          />
+          <Reveal>
+            <SectionHeading
+              title="Horarios de celebración"
+              description="Una referencia rápida a la vida litúrgica del santuario."
+            />
+          </Reveal>
           <div className="mt-10">
             <MassSchedule items={schedules} title="" />
           </div>
@@ -221,7 +200,9 @@ export default async function Home() {
 
       <Section className="bg-marfil">
         <Container>
-          <SectionHeading title="Noticias recientes" description="Novedades pastorales y de la comunidad." />
+          <Reveal>
+            <SectionHeading title="Noticias recientes" description="Novedades pastorales y de la comunidad." />
+          </Reveal>
           {news.length === 0 ? (
             <EmptyState
               className="mt-10"
@@ -233,7 +214,7 @@ export default async function Home() {
             <Stagger className="mt-10 grid gap-6 md:grid-cols-3">
               {news.map((item) => (
                 <StaggerItem key={item.id} className="h-full">
-                  <Card className="group h-full overflow-hidden">
+                  <Card className="group h-full overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
                     <Link href={`/noticias/${item.slug}`} className="block">
                       <div className="relative aspect-video w-full overflow-hidden bg-muted/20">
                         <Image
@@ -241,12 +222,12 @@ export default async function Home() {
                           alt={item.title}
                           fill
                           sizes="(max-width: 768px) 100vw, 33vw"
-                          className="object-cover transition-transform duration-300 group-hover:scale-105"
+                          className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
                         />
                       </div>
                       <div className="p-6">
-                        <p className="text-xs uppercase tracking-wide text-primary">{formatDate(item.published_at)}</p>
-                        <h3 className="mt-2 text-xl font-semibold group-hover:text-primary">{item.title}</h3>
+                        <p className="text-xs uppercase tracking-wide text-carmesi">{formatDate(item.published_at)}</p>
+                        <h3 className="mt-2 text-xl font-semibold transition-normal group-hover:text-azul">{item.title}</h3>
                         <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">
                           {item.excerpt || item.content}
                         </p>
@@ -262,7 +243,9 @@ export default async function Home() {
 
       <Section className="bg-background">
         <Container>
-          <SectionHeading title="Próximos eventos" description="Agenda litúrgica y comunitaria." />
+          <Reveal>
+            <SectionHeading title="Próximos eventos" description="Agenda litúrgica y comunitaria." />
+          </Reveal>
           {upcomingEvents.length === 0 ? (
             <EmptyState
               className="mt-10"
@@ -274,7 +257,7 @@ export default async function Home() {
             <Stagger className="mt-10 grid gap-6 md:grid-cols-3">
               {upcomingEvents.map((event) => (
                 <StaggerItem key={event.id} className="h-full">
-                  <Card className="group h-full overflow-hidden">
+                  <Card className="group h-full overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
                     <Link href={`/eventos/${event.slug}`} className="block">
                       <div className="relative aspect-video w-full overflow-hidden bg-muted/20">
                         <Image
@@ -282,12 +265,12 @@ export default async function Home() {
                           alt={event.title}
                           fill
                           sizes="(max-width: 768px) 100vw, 33vw"
-                          className="object-cover transition-transform duration-300 group-hover:scale-105"
+                          className="object-cover transition-transform duration-500 group-hover:scale-[1.03]"
                         />
                       </div>
                       <div className="p-6">
                         <Badge variant="outline">{formatDate(event.start_date)}</Badge>
-                        <h3 className="mt-3 text-xl font-semibold group-hover:text-primary">{event.title}</h3>
+                        <h3 className="mt-3 text-xl font-semibold transition-normal group-hover:text-azul">{event.title}</h3>
                         <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">{event.description}</p>
                       </div>
                     </Link>
@@ -301,7 +284,9 @@ export default async function Home() {
 
       <Section className="bg-marfil">
         <Container>
-          <SectionHeading title="Galería" description="Fotografías del santuario y su comunidad." />
+          <Reveal>
+            <SectionHeading title="Galería" description="Fotografías del santuario y su comunidad." />
+          </Reveal>
           {gallery.length === 0 ? (
             <EmptyState
               className="mt-10"
