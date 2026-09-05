@@ -1,0 +1,198 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Design Tokens */
+@import "../styles/tokens.css";
+
+/* Base styles */
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Custom colors - keeping existing ones for backward compatibility */
+:root {
+  --font-title: 'Cormorant Garamond', Georgia, serif;
+  --font-body: 'Inter', 'Segoe UI', sans-serif;
+  --marfil: #F7F3EA;
+  --blanco: #FFFFFF;
+  --dorado: #B89452;
+  --piedra: #8C8173;
+  --verde-andes: #34483B;
+  --carbone: #24231F;
+}
+
+/* Custom utilities - keeping existing ones for backward compatibility */
+.bg-marfil {
+  background-color: var(--marfil);
+}
+
+.bg-dorado {
+  background-color: var(--dorado);
+}
+
+.bg-piedra {
+  background-color: var(--piedra);
+}
+
+.bg-verde-andes {
+  background-color: var(--verde-andes);
+}
+
+.bg-carbone {
+  background-color: var(--carbone);
+}
+
+.text-marfil {
+  color: var(--marfil);
+}
+
+.text-dorado {
+  color: var(--dorado);
+}
+
+.text-piedra {
+  color: var(--piedra);
+}
+
+.text-verde-andes {
+  color: var(--verde-andes);
+}
+
+.text-carbone {
+  color: var(--carbone);
+}
+
+.border-marfil {
+  border-color: var(--marfil);
+}
+
+.border-dorado {
+  border-color: var(--dorado);
+}
+
+.border-piedra {
+  border-color: var(--piedra);
+}
+
+.border-verde-andes {
+  border-color: var(--verde-andes);
+}
+
+.border-carbone {
+  border-color: var(--carbone);
+}
+
+/* Smooth scroll */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-body);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-title);
+}
+
+/* Base component styles */
+.container {
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+@media (min-width: 640px) {
+  .container {
+    max-width: 640px;
+  }
+}
+
+@media (min-width: 768px) {
+  .container {
+    max-width: 768px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container {
+    max-width: 1024px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .container {
+    max-width: 1280px;
+  }
+}
+
+@media (min-width: 1536px) {
+  .container {
+    max-width: 1536px;
+  }
+}
+
+/* Section spacing */
+.section {
+  padding-top: 4rem;
+  padding-bottom: 4rem;
+}
+
+@media (min-width: 768px) {
+  .section {
+    padding-top: 6rem;
+    padding-bottom: 6rem;
+  }
+}
+
+/* Transition utilities */
+.transition-fast {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
+  transition-duration: 150ms;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.transition-normal {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
+  transition-duration: 250ms;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.transition-slow {
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
+  transition-duration: 350ms;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Accesibilidad: indicador de foco global visible (WCAG 2.4.7) */
+:focus-visible {
+  outline: 2px solid var(--color-dorado-oscuro);
+  outline-offset: 2px;
+}
+
+/* Accesibilidad: respetar prefers-reduced-motion también en CSS */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

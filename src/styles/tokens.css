@@ -1,0 +1,71 @@
+:root {
+  /* Primary Color Palette */
+  --color-marfil: #F7F3EA;
+  --color-blanco: #FFFFFF;
+  --color-dorado: #B89452;
+  --color-piedra: #8C8173;
+  --color-verde-andes: #34483B;
+  --color-carbone: #24231F;
+
+  /* Variantes accesibles (contraste WCAG AA) */
+  /* Piedra oscurecida: ratio 5.2:1 sobre marfil (antes 3.4:1 — insuficiente) */
+  --color-muted-foreground: #6F6455;
+  /* Dorado envejecido oscuro: ratio 5.1:1 sobre marfil para texto y botones */
+  --color-dorado-oscuro: #8A6A28;
+  /* Dorado claro para texto/acentos sobre fondos oscuros (verde andes, carbón) */
+  --color-dorado-claro: #D9BE8C;
+
+  /* Semantic Tokens */
+  --color-background: var(--color-marfil);
+  --color-foreground: var(--color-carbone);
+  --color-primary: var(--color-dorado-oscuro);
+  --color-secondary: var(--color-verde-andes);
+  --color-accent: var(--color-dorado);
+  --color-muted: var(--color-piedra);
+  --color-border: var(--color-piedra);
+  --color-card: var(--color-blanco);
+
+  /* Typography */
+  --font-title: 'Cormorant Garamond', serif;
+  --font-body: 'Inter', sans-serif;
+
+  /* Spacing Scale */
+  --spacing-0: 0px;
+  --spacing-1: 4px;
+  --spacing-2: 8px;
+  --spacing-3: 12px;
+  --spacing-4: 16px;
+  --spacing-5: 20px;
+  --spacing-6: 24px;
+  --spacing-7: 28px;
+  --spacing-8: 32px;
+  --spacing-9: 36px;
+  --spacing-10: 40px;
+  --spacing-11: 44px;
+  --spacing-12: 48px;
+  --spacing-14: 56px;
+  --spacing-16: 64px;
+  --spacing-20: 80px;
+  --spacing-24: 96px;
+  --spacing-28: 112px;
+  --spacing-32: 128px;
+
+  /* Border Radius */
+  --radius-none: 0px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 12px;
+  --radius-full: 9999px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+
+  /* Transitions */
+  --transition-fast: 150ms ease-in-out;
+  --transition-normal: 250ms ease-in-out;
+  --transition-slow: 350ms ease-in-out;
+}

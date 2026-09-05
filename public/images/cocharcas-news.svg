@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" role="img" aria-labelledby="title desc">
+  <title id="title">Noticias Cocharcas</title>
+  <desc id="desc">Ilustración sencilla para portadas de noticias.</desc>
+  <rect width="1200" height="800" fill="#34483B"/>
+  <rect x="80" y="90" width="1040" height="620" rx="36" fill="#F7F3EA"/>
+  <rect x="140" y="160" width="460" height="40" rx="20" fill="#B89452"/>
+  <rect x="140" y="240" width="920" height="26" rx="13" fill="#8C8173" opacity="0.6"/>
+  <rect x="140" y="290" width="840" height="26" rx="13" fill="#8C8173" opacity="0.45"/>
+  <rect x="140" y="360" width="760" height="220" rx="24" fill="#EAD5AD"/>
+  <circle cx="940" cy="470" r="110" fill="#B89452" opacity="0.3"/>
+  <text x="600" y="705" text-anchor="middle" fill="#24231F" font-family="Georgia, serif" font-size="44" font-weight="700">Noticias del Santuario</text>
+</svg>

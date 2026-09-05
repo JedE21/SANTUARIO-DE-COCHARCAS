@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" role="img" aria-labelledby="title desc">
+  <title id="title">Sacramento Cocharcas</title>
+  <desc id="desc">Ilustración limpia para tarjetas de sacramentos.</desc>
+  <rect width="800" height="800" fill="#F7F3EA"/>
+  <circle cx="400" cy="240" r="150" fill="#B89452" opacity="0.18"/>
+  <circle cx="400" cy="400" r="180" fill="#34483B" opacity="0.12"/>
+  <path d="M390 170 h20 v120 h120 v20 H410 v120 h-20 V310 H270 v-20 h120z" fill="#B89452"/>
+  <text x="400" y="590" text-anchor="middle" fill="#24231F" font-family="Georgia, serif" font-size="54" font-weight="700">Sacramento</text>
+</svg>

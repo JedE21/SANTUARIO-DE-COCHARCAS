@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" role="img" aria-labelledby="title desc">
+  <title id="title">Santuario de Cocharcas</title>
+  <desc id="desc">Ilustración simple con cielo, cerros y la silueta del santuario.</desc>
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="55%" stop-color="#34483B"/>
+      <stop offset="100%" stop-color="#B89452"/>
+    </linearGradient>
+    <linearGradient id="sun" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fff4c2"/>
+      <stop offset="100%" stop-color="#f5d27f"/>
+    </linearGradient>
+  </defs>
+  <rect width="1600" height="900" fill="url(#sky)"/>
+  <circle cx="1240" cy="180" r="90" fill="url(#sun)" opacity="0.8"/>
+  <path d="M0 620 C180 560, 320 540, 480 590 C620 635, 760 500, 920 550 C1080 600, 1230 505, 1600 575 L1600 900 L0 900 Z" fill="#22312a"/>
+  <path d="M0 700 C220 640, 390 660, 560 690 C760 725, 940 650, 1120 680 C1280 705, 1440 675, 1600 690 L1600 900 L0 900 Z" fill="#1a241f"/>
+  <rect x="580" y="470" width="440" height="280" rx="12" fill="#f7f3ea"/>
+  <rect x="635" y="410" width="90" height="340" rx="8" fill="#e9dcc0"/>
+  <rect x="875" y="410" width="90" height="340" rx="8" fill="#e9dcc0"/>
+  <path d="M560 500 L800 330 L1040 500 Z" fill="#b89452"/>
+  <rect x="745" y="575" width="110" height="175" rx="8" fill="#8c8173"/>
+  <rect x="610" y="540" width="110" height="70" rx="6" fill="#c7b08a"/>
+  <rect x="880" y="540" width="110" height="70" rx="6" fill="#c7b08a"/>
+  <text x="800" y="860" text-anchor="middle" fill="#f7f3ea" font-family="Georgia, serif" font-size="44" font-weight="700">Santuario de Cocharcas</text>
+</svg>
