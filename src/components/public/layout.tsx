@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { AnnouncementBar } from './announcement-bar';
 import { Header } from './header';
 import { Footer } from './footer';
 
@@ -17,7 +16,6 @@ export const PublicLayout = async ({ children, className = '' }: PublicLayoutPro
       >
         Saltar al contenido
       </a>
-      <AnnouncementBar />
       <Header className={className} />
       <div id="contenido" tabIndex={-1} className="focus:outline-none">
         {children}

@@ -8,9 +8,9 @@ export async function AnnouncementBar() {
   if (!latest?.title) return null;
 
   return (
-    <div className="border-b border-dorado/30 bg-azul text-marfil">
+    <div className="border-b border-dorado/20 bg-negro text-marfil">
       <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-center gap-x-3 gap-y-1 px-4 py-2 text-center text-sm sm:px-6 lg:px-8">
-        <span className="font-medium text-dorado" aria-hidden="true">
+        <span className="font-medium text-dorado-claro" aria-hidden="true">
           ●
         </span>
         <p className="text-marfil/90">

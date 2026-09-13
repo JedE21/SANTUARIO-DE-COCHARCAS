@@ -295,6 +295,20 @@ export type SacramentRequest = {
   updated_at?: string | null;
 };
 
+export type Slide = {
+  id: string;
+  section: string;
+  title: string;
+  description?: string | null;
+  image_url: string;
+  button_text?: string | null;
+  button_url?: string | null;
+  order_index?: number | null;
+  is_active?: boolean | null;
+  created_at?: string | null;
+  updated_at?: string | null;
+};
+
 export type Media = {
   id: string;
   name: string;
@@ -349,6 +363,7 @@ export type Tables = {
   mass_requests: MassRequest;
   sacrament_requests: SacramentRequest;
   media: Media;
+  slides: Slide;
   audit_logs: AuditLog;
   newsletter_subscribers: NewsletterSubscriber;
 };

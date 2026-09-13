@@ -13,20 +13,22 @@ export default async function AdminAvisosPage() {
       <AdminCrud
         table="announcements"
         rows={announcements}
+        entityLabel="aviso"
         emptyMessage="No hay avisos publicados."
         columns={[
-          { key: 'title', label: 'Título' },
-          { key: 'status', label: 'Estado' },
+          { key: 'title', label: 'Aviso' },
+          { key: 'status', label: 'Estado', type: 'status' },
           { key: 'published_at', label: 'Publicación', type: 'date' },
         ]}
         fields={[
           { name: 'title', label: 'Título', required: true },
-          { name: 'content', label: 'Contenido', type: 'textarea' },
-          { name: 'link_url', label: 'Enlace (opcional)', type: 'url' },
+          { name: 'content', label: 'Contenido', type: 'textarea', group: 'content', fullWidth: true },
+          { name: 'link_url', label: 'Enlace (opcional)', type: 'url', group: 'content', fullWidth: true },
           {
             name: 'status',
             label: 'Estado',
             type: 'select',
+            group: 'publication',
             options: [
               { value: 'draft', label: 'Borrador' },
               { value: 'published', label: 'Publicado' },

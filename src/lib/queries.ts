@@ -17,6 +17,7 @@ import {
   fallbackSacraments,
   fallbackSacramentTypes,
   fallbackSiteSettings,
+  fallbackSlides,
 } from '@/lib/seed-data';
 import type {
   Announcement,
@@ -36,6 +37,7 @@ import type {
   Sacrament,
   SacramentType,
   SiteSettings,
+  Slide,
 } from '@/types/database';
 
 async function withClientFallback<T>(fallback: T, run: (db: ReturnType<typeof createClient>) => Promise<T>): Promise<T> {
@@ -232,6 +234,31 @@ export async function getSacramentTypes(): Promise<SacramentType[]> {
     if (error || !data || data.length === 0) return fallbackSacramentTypes;
     return data as unknown as SacramentType[];
   });
+}
+
+// ---------------------------------------------------------------------------
+// Slides por sección (home, santuario, fe-peregrinacion, festividades,
+// historia, galeria). Si la tabla aún no existe, devuelve los slides de
+// demostración para que el sitio nunca quede sin carrusel.
+// ---------------------------------------------------------------------------
+
+export async function getSlidesBySection(section: string, limit = 12): Promise<Slide[]> {
+  const fallback = fallbackSlides.filter((s) => s.section === section).slice(0, limit);
+  if (!hasSupabaseConfig()) return fallback;
+  try {
+    const db = createClient();
+    const { data, error } = await db
+      .from('slides')
+      .select('*')
+      .eq('section', section)
+      .eq('is_active', true)
+      .order('order_index', { ascending: true })
+      .limit(limit);
+    if (error || !data || data.length === 0) return fallback;
+    return data as unknown as Slide[];
+  } catch {
+    return fallback;
+  }
 }
 
 export function slugify(value: string): string {

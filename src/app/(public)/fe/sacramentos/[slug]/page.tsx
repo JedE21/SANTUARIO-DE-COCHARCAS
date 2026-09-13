@@ -2,7 +2,9 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { Container, Section, Badge, Card, Button } from '@/components/public';
+import { ArrowRight } from 'lucide-react';
+import { Container, Section } from '@/components/public';
+import { FadeIn } from '@/components/motion';
 import { getSacramentBySlug } from '@/lib/queries';
 import { pageMetadata } from '@/lib/seo';
 
@@ -26,36 +28,64 @@ export default async function SacramentDetailPage({ params }: Props) {
   return (
     <main>
       <Section className="bg-marfil">
-        <Container className="py-16">
+        <Container>
           <div className="mx-auto max-w-3xl">
-            <Badge className="mb-4">Sacramento</Badge>
-            <h1 className="text-4xl font-bold">{sacrament.name}</h1>
+            <FadeIn>
+              <p className="eyebrow text-tierra">Sacramento</p>
+              <h1 className="display-section mt-5 text-marron">{sacrament.name}</h1>
+            </FadeIn>
+            {sacrament.image_url ? (
+              <FadeIn delay={0.1} className="mt-10">
+                <div className="relative aspect-[16/9] overflow-hidden bg-piedra/30">
+                  <Image
+                    src={sacrament.image_url}
+                    alt={sacrament.name}
+                    fill
+                    priority
+                    sizes="(max-width: 768px) 100vw, 768px"
+                    className="object-cover"
+                  />
+                </div>
+              </FadeIn>
+            ) : null}
           </div>
         </Container>
       </Section>
-      <Section className="bg-background">
+
+      <Section className="bg-blanco">
         <Container>
-          <Card className="mx-auto max-w-3xl overflow-hidden">
-            {sacrament.image_url && (
-              <div className="relative aspect-video w-full overflow-hidden">
-                <Image src={sacrament.image_url} alt={sacrament.name} fill sizes="(max-width: 768px) 100vw, 768px" priority className="object-cover" />
-              </div>
-            )}
-            <div className="space-y-5 p-8">
-              {sacrament.description ? <p className="text-lg text-muted-foreground">{sacrament.description}</p> : null}
-              {sacrament.requirements ? (
-                <div>
-                  <h2 className="text-xl font-semibold">Requisitos y orientación</h2>
-                  <p className="mt-2 text-muted-foreground">{sacrament.requirements}</p>
+          <article className="mx-auto max-w-3xl">
+            {sacrament.description ? (
+              <p className="font-heading text-xl italic leading-relaxed text-marron sm:text-2xl">
+                {sacrament.description}
+              </p>
+            ) : null}
+            {sacrament.requirements ? (
+              <div className="mt-10">
+                <p className="eyebrow text-tierra">Requisitos y orientación</p>
+                <div className="mt-5 space-y-4 border-t border-tierra/20 pt-6 text-lg leading-relaxed text-muted-foreground">
+                  {sacrament.requirements.split(/\n{2,}/).filter(Boolean).map((paragraph, i) => (
+                    <p key={i}>{paragraph}</p>
+                  ))}
                 </div>
-              ) : null}
-              <div className="pt-2">
-                <Button asChild>
-                  <Link href="/solicitudes/sacramentos">Solicitar este sacramento</Link>
-                </Button>
               </div>
+            ) : null}
+
+            <div className="mt-12">
+              <Link
+                href="/solicitudes/sacramentos"
+                className="group inline-flex items-center gap-3 text-[0.7rem] font-semibold uppercase tracking-[0.26em] text-marron transition-colors duration-300 hover:text-dorado-oscuro"
+              >
+                <span className="border-b border-marron/30 pb-1.5 transition-colors duration-300 group-hover:border-dorado">
+                  Solicitar este sacramento
+                </span>
+                <ArrowRight
+                  className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1"
+                  aria-hidden="true"
+                />
+              </Link>
             </div>
-          </Card>
+          </article>
         </Container>
       </Section>
     </main>

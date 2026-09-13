@@ -17,29 +17,32 @@ export function AdminTable<T extends { id: string }>({
 }: AdminTableProps<T>) {
   if (rows.length === 0) {
     return (
-      <div className="rounded-lg border border-piedra/20 bg-blanco p-8 text-center text-sm text-carbone/60">
-        {emptyMessage}
+      <div className="rounded-lg border border-piedra/30 bg-blanco p-10 text-center">
+        <p className="text-sm text-muted-foreground">{emptyMessage}</p>
       </div>
     );
   }
 
   return (
-    <div className="overflow-x-auto rounded-lg border border-piedra/20 bg-blanco shadow-sm">
-      <table className="min-w-full divide-y divide-piedra/10 text-sm">
-        <thead className="bg-marfil">
+    <div className="overflow-x-auto rounded-lg border border-piedra/30 bg-blanco">
+      <table className="min-w-full divide-y divide-piedra/20 text-sm">
+        <thead className="bg-marfil/60">
           <tr>
             {columns.map((col) => (
-              <th key={String(col.key)} className="px-4 py-3 text-left font-semibold text-carbone">
+              <th
+                key={String(col.key)}
+                className="px-4 py-3 text-left text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-tierra"
+              >
                 {col.label}
               </th>
             ))}
           </tr>
         </thead>
-        <tbody className="divide-y divide-piedra/10">
+        <tbody className="divide-y divide-piedra/15">
           {rows.map((row) => (
-            <tr key={row.id} className="hover:bg-marfil/50">
+            <tr key={row.id} className="transition-colors hover:bg-marfil/40">
               {columns.map((col) => (
-                <td key={String(col.key)} className="px-4 py-3 text-carbone/80">
+                <td key={String(col.key)} className="px-4 py-3 text-marron/85">
                   {col.render
                     ? col.render(row)
                     : String((row as Record<string, unknown>)[col.key as string] ?? '—')}

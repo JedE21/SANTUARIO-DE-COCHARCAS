@@ -1,11 +1,12 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Newspaper } from 'lucide-react';
-import { Container, Section, SectionHeading, Badge, Card, EmptyState } from '@/components/public';
+import { ArrowRight, Newspaper } from 'lucide-react';
+import { Container, Section, EmptyState } from '@/components/public';
 import { PageHero } from '@/components/public/page-hero';
-import { FadeIn, Reveal, Stagger, StaggerItem } from '@/components/motion';
-import { getNewsList, getNewsCategories } from '@/lib/queries';
+import { SectionSlider } from '@/components/public/section-slider';
+import { FadeIn, Reveal } from '@/components/motion';
+import { getNewsList, getNewsCategories, getSlidesBySection } from '@/lib/queries';
 import { pageMetadata } from '@/lib/seo';
 
 export const metadata: Metadata = pageMetadata({
@@ -16,79 +17,122 @@ export const metadata: Metadata = pageMetadata({
 
 function formatDate(value?: string | null) {
   if (!value) return 'Próximamente';
-  return new Date(value).toLocaleDateString('es-PE', { day: 'numeric', month: 'long', year: 'numeric' });
+  return new Date(value)
+    .toLocaleDateString('es-PE', { day: '2-digit', month: 'short', year: 'numeric' })
+    .replace(/\./g, '')
+    .toUpperCase();
 }
 
 export default async function NoticiasPage() {
-  const [news, categories] = await Promise.all([getNewsList(30), getNewsCategories()]);
+  const [news, categories, slides] = await Promise.all([getNewsList(30), getNewsCategories(), getSlidesBySection('noticias')]);
   const featured = news.find((n) => n.is_featured);
   const rest = news.filter((n) => n.id !== featured?.id);
+  const list = featured ? rest : news;
 
   return (
     <main>
-      <PageHero
-        eyebrow="Noticias"
-        title="Últimas noticias del santuario"
-        description="Novedades pastorales, culturales y patrimoniales de la comunidad de Cocharcas."
-      />
+      {/* Carrusel de fotografías de la sección: protagonista en lugar de la banda marrón */}
+      {slides.length > 0 ? (
+        <SectionSlider slides={slides} label="Noticias" priority fullScreen />
+      ) : (
+        <PageHero
+          eyebrow="Noticias"
+          title="Últimas noticias del santuario"
+          description="Novedades pastorales, culturales y patrimoniales de la comunidad de Cocharcas."
+        />
+      )}
+      <h1 className="sr-only">Últimas noticias del santuario</h1>
 
-      <Section className="bg-background">
+      <Section className="bg-marfil">
         <Container>
-          {featured && (
-            <FadeIn>
-              <Link href={`/noticias/${featured.slug}`} className="group mb-12 grid overflow-hidden rounded-xl border border-border bg-card transition-all duration-300 hover:-translate-y-1 hover:shadow-lg md:grid-cols-2">
-                <div className="relative aspect-video w-full overflow-hidden bg-muted/20">
-                  <Image src={featured.cover_image_url || '/images/cocharcas-news.svg'} alt={featured.title} fill sizes="(max-width: 768px) 100vw, 50vw" priority className="object-cover transition-transform duration-500 group-hover:scale-[1.03]" />
-                </div>
-                <div className="flex flex-col justify-center p-8">
-                  <Badge variant="outline" className="mb-4 self-start">Destacada</Badge>
-                  <h2 className="font-heading text-3xl font-semibold text-azul">{featured.title}</h2>
-                  <p className="mt-3 text-muted-foreground">{featured.excerpt || featured.content}</p>
-                  <p className="mt-4 text-xs uppercase tracking-wide text-carmesi">{formatDate(featured.published_at)}</p>
-                </div>
-              </Link>
-            </FadeIn>
-          )}
-
-          <Reveal>
-            <SectionHeading
-              title="Todas las noticias"
-              description="Mantente al día con la vida del santuario."
-            />
-          </Reveal>
-
-          {(featured ? rest : news).length === 0 ? (
+          {news.length === 0 ? (
             <EmptyState
-              className="mt-10"
               icon={<Newspaper className="h-6 w-6" />}
               title="Aún no hay noticias publicadas"
               description="Cuando se publiquen novedades del santuario aparecerán en esta sección."
             />
           ) : (
-            <Stagger className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {(featured ? rest : news).map((item) => {
-                const category = categories.find((c) => c.id === item.category_id);
-                return (
-                  <StaggerItem key={item.id} className="h-full">
-                    <Card className="group h-full overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-lg">
-                      <Link href={`/noticias/${item.slug}`} className="block">
-                        <div className="relative aspect-video w-full overflow-hidden bg-muted/20">
-                          <Image src={item.cover_image_url || '/images/cocharcas-news.svg'} alt={item.title} fill sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw" className="object-cover transition-transform duration-500 group-hover:scale-[1.03]" />
-                        </div>
-                        <div className="space-y-3 p-6">
-                          <div className="flex items-center gap-2">
-                            {category ? <Badge variant="outline">{category.name}</Badge> : null}
-                            <span className="text-xs text-muted-foreground">{formatDate(item.published_at)}</span>
-                          </div>
-                          <h3 className="text-xl font-semibold text-azul transition-normal group-hover:text-carmesi">{item.title}</h3>
-                          <p className="text-sm text-muted-foreground line-clamp-2">{item.excerpt || item.content}</p>
-                        </div>
-                      </Link>
-                    </Card>
-                  </StaggerItem>
-                );
-              })}
-            </Stagger>
+            <div className="grid gap-14 lg:grid-cols-12 lg:gap-20">
+              {/* Columna editorial: lista numerada de artículos */}
+              <div className="lg:col-span-7 lg:order-2">
+                <ol className="border-t border-tierra/20">
+                  {list.map((item, i) => {
+                    const category = categories.find((c) => c.id === item.category_id);
+                    return (
+                      <Reveal key={item.id} delay={Math.min(i * 0.06, 0.3)}>
+                        <li className="border-b border-tierra/20">
+                          <Link
+                            href={`/noticias/${item.slug}`}
+                            className="group grid gap-3 py-8 sm:grid-cols-[3rem_1fr_auto] sm:items-baseline sm:gap-8"
+                          >
+                            <span className="font-heading text-lg tabular-nums text-tierra/70">
+                              {String(i + 1).padStart(2, '0')}
+                            </span>
+                            <span>
+                              <span className="block text-[0.62rem] font-semibold uppercase tracking-[0.24em] text-tierra">
+                                {formatDate(item.published_at)}
+                                {category ? ` · ${category.name}` : ''}
+                              </span>
+                              <span className="mt-2 block font-heading text-2xl font-medium leading-snug text-marron transition-colors duration-300 group-hover:text-dorado-oscuro sm:text-3xl">
+                                {item.title}
+                              </span>
+                              {item.excerpt ? (
+                                <span className="mt-2 line-clamp-2 block max-w-xl text-sm leading-relaxed text-muted-foreground">
+                                  {item.excerpt}
+                                </span>
+                              ) : null}
+                            </span>
+                            <ArrowRight
+                              className="hidden h-4 w-4 text-tierra/60 transition-all duration-300 group-hover:translate-x-1.5 group-hover:text-dorado-oscuro sm:block"
+                              aria-hidden="true"
+                            />
+                          </Link>
+                        </li>
+                      </Reveal>
+                    );
+                  })}
+                </ol>
+              </div>
+
+              {/* Noticia destacada: imagen protagonista */}
+              {featured ? (
+                <FadeIn className="lg:col-span-5 lg:order-1">
+                  <div className="lg:sticky lg:top-28">
+                    <p className="eyebrow text-tierra">Destacada</p>
+                    <Link href={`/noticias/${featured.slug}`} className="group mt-6 block">
+                      <div className="relative aspect-[4/5] overflow-hidden bg-piedra/40 sm:aspect-[4/3]">
+                        <Image
+                          src={featured.cover_image_url || '/images/santuario/santuario-plaza.jpg'}
+                          alt={featured.title}
+                          fill
+                          priority
+                          sizes="(max-width: 1024px) 100vw, 40vw"
+                          className="img-zoom object-cover"
+                        />
+                      </div>
+                      <p className="mt-5 text-[0.62rem] font-semibold uppercase tracking-[0.24em] text-tierra">
+                        {formatDate(featured.published_at)}
+                      </p>
+                      <h2 className="mt-2 font-heading text-3xl font-medium leading-tight text-marron transition-colors duration-300 group-hover:text-dorado-oscuro">
+                        {featured.title}
+                      </h2>
+                      {featured.excerpt ? (
+                        <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{featured.excerpt}</p>
+                      ) : null}
+                      <span className="group mt-5 inline-flex items-center gap-3 text-[0.7rem] font-semibold uppercase tracking-[0.26em] text-marron transition-colors duration-300 hover:text-dorado-oscuro">
+                        <span className="border-b border-marron/30 pb-1.5 transition-colors duration-300 group-hover:border-dorado">
+                          Leer la noticia
+                        </span>
+                        <ArrowRight
+                          className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1"
+                          aria-hidden="true"
+                        />
+                      </span>
+                    </Link>
+                  </div>
+                </FadeIn>
+              ) : null}
+            </div>
           )}
         </Container>
       </Section>

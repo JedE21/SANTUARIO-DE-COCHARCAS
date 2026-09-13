@@ -13,25 +13,27 @@ export default async function AdminEventosPage() {
       <AdminCrud
         table="events"
         rows={events}
+        entityLabel="evento"
         emptyMessage="No hay eventos registrados."
         columns={[
-          { key: 'title', label: 'Título' },
-          { key: 'location', label: 'Lugar' },
-          { key: 'status', label: 'Estado' },
+          { key: 'title', label: 'Evento' },
           { key: 'start_date', label: 'Fecha', type: 'date' },
+          { key: 'status', label: 'Estado', type: 'status' },
+          { key: 'location', label: 'Lugar' },
         ]}
         fields={[
           { name: 'title', label: 'Título', required: true },
           { name: 'slug', label: 'Slug', required: true },
-          { name: 'description', label: 'Descripción', type: 'textarea', required: true },
-          { name: 'image_url', label: 'Imagen (URL)', type: 'url' },
-          { name: 'location', label: 'Lugar' },
-          { name: 'start_date', label: 'Fecha de inicio', type: 'date', required: true },
-          { name: 'end_date', label: 'Fecha de fin', type: 'date' },
+          { name: 'description', label: 'Descripción', type: 'textarea', required: true, group: 'content', fullWidth: true },
+          { name: 'image_url', label: 'Imagen (URL)', type: 'url', group: 'content', fullWidth: true },
+          { name: 'location', label: 'Lugar', group: 'content' },
+          { name: 'start_date', label: 'Fecha de inicio', type: 'date', required: true, group: 'publication' },
+          { name: 'end_date', label: 'Fecha de fin', type: 'date', group: 'publication' },
           {
             name: 'status',
             label: 'Estado',
             type: 'select',
+            group: 'publication',
             options: [
               { value: 'draft', label: 'Borrador' },
               { value: 'published', label: 'Publicado' },

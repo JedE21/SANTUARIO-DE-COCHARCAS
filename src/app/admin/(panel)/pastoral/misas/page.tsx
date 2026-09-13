@@ -13,6 +13,7 @@ export default async function AdminMisasPage() {
       <AdminCrud
         table="mass_schedules"
         rows={schedules}
+        entityLabel="horario"
         emptyMessage="No hay horarios configurados."
         columns={[
           { key: 'day_of_week', label: 'Día' },

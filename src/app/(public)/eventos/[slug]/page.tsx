@@ -2,8 +2,10 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { Container, Section, Badge, Card } from '@/components/public';
+import { ArrowRight } from 'lucide-react';
+import { Container, Section } from '@/components/public';
 import { JsonLd } from '@/components/shared/json-ld';
+import { FadeIn } from '@/components/motion';
 import { getEventBySlug, getEventsList } from '@/lib/queries';
 import { absoluteUrl, ogImagePath, pageMetadata } from '@/lib/seo';
 
@@ -21,7 +23,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 function formatDate(value: string) {
-  return new Date(value + 'T00:00:00').toLocaleDateString('es-PE', { day: 'numeric', month: 'long', year: 'numeric' });
+  return new Date(value + 'T00:00:00').toLocaleDateString('es-PE', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  });
 }
 
 export default async function EventoPage({ params }: Props) {
@@ -50,45 +56,82 @@ export default async function EventoPage({ params }: Props) {
   return (
     <main>
       <JsonLd data={jsonLd} />
+
       <Section className="bg-marfil">
-        <Container className="py-16">
+        <Container>
           <div className="mx-auto max-w-3xl">
-            <Badge className="mb-4">Evento</Badge>
-            <h1 className="text-4xl font-bold">{event.title}</h1>
-            <p className="mt-4 text-sm text-muted-foreground">{formatDate(event.start_date)}{event.end_date ? ` — ${formatDate(event.end_date)}` : ''}</p>
+            <FadeIn>
+              <p className="eyebrow text-tierra">
+                Evento
+                {event.start_date ? ` · ${formatDate(event.start_date)}` : ''}
+                {event.end_date && event.end_date !== event.start_date
+                  ? ` — ${formatDate(event.end_date)}`
+                  : ''}
+              </p>
+              <h1 className="display-section mt-5 text-marron">{event.title}</h1>
+              {event.location ? (
+                <p className="mt-5 font-heading text-lg italic text-tierra">{event.location}</p>
+              ) : null}
+            </FadeIn>
+            {event.image_url ? (
+              <FadeIn delay={0.1} className="mt-10">
+                <div className="relative aspect-[16/9] overflow-hidden bg-piedra/30">
+                  <Image
+                    src={event.image_url}
+                    alt={event.title}
+                    fill
+                    priority
+                    sizes="(max-width: 768px) 100vw, 768px"
+                    className="object-cover"
+                  />
+                </div>
+              </FadeIn>
+            ) : null}
           </div>
         </Container>
       </Section>
 
-      <Section className="bg-background">
+      <Section className="bg-blanco">
         <Container>
-          <article className="mx-auto max-w-3xl overflow-hidden rounded-xl border border-border bg-card">
-            {event.image_url && (
-              <div className="relative aspect-video w-full overflow-hidden">
-                <Image src={event.image_url} alt={event.title} fill sizes="(max-width: 768px) 100vw, 768px" priority className="object-cover" />
-              </div>
-            )}
-            <div className="space-y-5 p-8">
-              {event.location ? <p className="text-sm font-semibold uppercase tracking-wide text-primary">{event.location}</p> : null}
-              <p className="leading-relaxed text-muted-foreground">{event.description}</p>
+          <article className="mx-auto max-w-3xl">
+            <div className="space-y-6 text-lg leading-relaxed text-muted-foreground">
+              {(event.description || 'Contenido próximamente disponible.')
+                .split(/\n{2,}/)
+                .filter(Boolean)
+                .map((paragraph, i) => (
+                  <p key={i}>{paragraph}</p>
+                ))}
             </div>
           </article>
 
-          {related.length > 0 && (
-            <div className="mx-auto mt-16 max-w-5xl">
-              <h2 className="text-2xl font-semibold">Más eventos</h2>
-              <div className="mt-6 grid gap-6 md:grid-cols-3">
+          {related.length > 0 ? (
+            <div className="mx-auto mt-20 max-w-4xl">
+              <p className="eyebrow text-tierra">Más eventos</p>
+              <ol className="mt-8 border-t border-tierra/20">
                 {related.map((ev) => (
-                  <Card key={ev.id} className="p-6">
-                    <Link href={`/eventos/${ev.slug}`}>
-                      <p className="text-xs uppercase tracking-wide text-primary">{formatDate(ev.start_date)}</p>
-                      <h3 className="mt-2 text-lg font-semibold">{ev.title}</h3>
+                  <li key={ev.id} className="border-b border-tierra/20">
+                    <Link
+                      href={`/eventos/${ev.slug}`}
+                      className="group flex items-center justify-between gap-6 py-6"
+                    >
+                      <span>
+                        <span className="block text-[0.62rem] font-semibold uppercase tracking-[0.22em] text-tierra">
+                          {formatDate(ev.start_date)}
+                        </span>
+                        <span className="mt-1.5 block font-heading text-xl font-medium text-marron transition-colors duration-300 group-hover:text-dorado-oscuro sm:text-2xl">
+                          {ev.title}
+                        </span>
+                      </span>
+                      <ArrowRight
+                        className="h-4 w-4 shrink-0 text-tierra/60 transition-all duration-300 group-hover:translate-x-1.5 group-hover:text-dorado-oscuro"
+                        aria-hidden="true"
+                      />
                     </Link>
-                  </Card>
+                  </li>
                 ))}
-              </div>
+              </ol>
             </div>
-          )}
+          ) : null}
         </Container>
       </Section>
     </main>

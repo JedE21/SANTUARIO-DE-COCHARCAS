@@ -16,6 +16,7 @@ export default async function AdminSacramentosPage() {
       <AdminCrud
         table="sacraments"
         rows={sacraments}
+        entityLabel="sacramento"
         emptyMessage="No hay sacramentos configurados."
         columns={[
           { key: 'name', label: 'Sacramento' },

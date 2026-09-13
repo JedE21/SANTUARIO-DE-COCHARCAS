@@ -1,7 +1,9 @@
-﻿import * as React from 'react';
+import * as React from 'react';
 import type { Metadata } from 'next';
-import { Breadcrumbs } from '@/components/shared/breadcrumbs';
-import { Section, Container, SectionHeading, Image, Link } from '@/components/public';
+import Link from 'next/link';
+import { ArrowRight } from 'lucide-react';
+import { PageHero } from '@/components/public/page-hero';
+import { Section, Container } from '@/components/public';
 import { FadeIn } from '@/components/motion';
 import { pageMetadata } from '@/lib/seo';
 
@@ -40,8 +42,8 @@ async function fetchPatrimonioInfo(): Promise<PatrimonioInfo> {
       {
         title: 'Pintura de la Virgen de la Candelaria',
         description: 'Obra del siglo XVIII que representa a la Virgen bajo una advocación relacionada con la purificación y la luz.',
-        imageUrl: null,
-        imageAlt: 'Pintura de la Virgen de la Candelaria',
+        imageUrl: '/images/santuario/pintura-colonial.jpg',
+        imageAlt: 'Pintura colonial de la Virgen',
         period: 'Siglo XVIII'
       },
       {
@@ -59,7 +61,7 @@ async function fetchPatrimonioInfo(): Promise<PatrimonioInfo> {
         period: 'Siglo XIX'
       }
     ],
-    imageUrl: null,
+    imageUrl: '/images/santuario/pintura-detalle.jpg',
     imageAlt: 'Elementos del patrimonio cultural del santuario'
   };
 }
@@ -75,201 +77,102 @@ export default async function PatrimonioPage() {
 
   return (
     <main>
-      <section className="pb-20">
+      <PageHero
+        eyebrow="Patrimonio"
+        title={patrimonioInfo.title}
+        description={patrimonioInfo.description}
+      />
+
+      {/* Valores: lista editorial en dos columnas */}
+      <Section className="bg-marfil">
         <Container>
-          {/* Breadcrumbs */}
-          <Breadcrumbs
-            items={[
-              { label: 'Inicio', href: '/' },
-              { label: 'El Santuario', href: '/santuario' },
-              { label: 'Patrimonio', href: '/santuario/patrimonio', isActive: true }
-            ]}
-          />
-
-          {/* Page Header - Contemplative style */}
-          <section className="relative">
-            <div className="absolute inset-0">
-              {patrimonioInfo.imageUrl ? (
-                <Image
-                  src={patrimonioInfo.imageUrl}
-                  alt="Patrimonio del Santuario"
-                  fill
-                  sizes="100vw"
-                  priority
-                  className="object-cover"
-                />
-              ) : (
-                <div className="h-full w-full bg-gradient-to-b from-carbone/80 to-verde-andes"></div>
-              )}
-            </div>
-
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-
-            <div className="relative z-10 flex min-h-[50vh] flex-col items-center justify-center px-4 text-center sm:px-6 lg:px-8">
-              <FadeIn delay={0} duration={0.5}>
-                <p className="mb-2 text-xs font-medium tracking-wider text-dorado-claro">
-                  PATRIMONIO
-                </p>
-              </FadeIn>
-
-              <FadeIn delay={0.2} duration={0.5}>
-                <h1 className="mb-2 text-4xl font-bold leading-tight text-blanco sm:text-5xl">
-                  {patrimonioInfo.title}
-                </h1>
-              </FadeIn>
-
-              <FadeIn delay={0.4} duration={0.5}>
-                <p className="mb-6 max-w-2xl text-xl text-blanco/90 sm:text-2xl">
-                  {patrimonioInfo.description}
-                </p>
-              </FadeIn>
-            </div>
-          </section>
-
-          {/* Main content */}
-          <div className="space-y-12">
-            {/* Historical Value */}
-            <FadeIn delay={0} duration={0.5}>
-              <Section>
-                <Container>
-                  <SectionHeading
-                    title="Valor Histórico"
-                    description="Documentos y objetos que narran nuestra historia"
-                  />
-                  <p className="text-muted-foreground">
-                    {patrimonioInfo.historicalValue}
-                  </p>
-                </Container>
-              </Section>
+          <div className="grid gap-14 lg:grid-cols-12 lg:gap-20">
+            <FadeIn className="lg:col-span-6">
+              <p className="eyebrow text-tierra">Valor histórico</p>
+              <h2 className="display-section mt-5 text-marron">Documentos y memoria</h2>
+              <p className="mt-7 leading-relaxed text-muted-foreground">
+                {patrimonioInfo.historicalValue}
+              </p>
             </FadeIn>
-
-            {/* Artistic Value */}
-            <FadeIn delay={0.2} duration={0.5}>
-              <Section className="bg-marfil">
-                <Container>
-                  <SectionHeading
-                    title="Valor Artístico"
-                    description="Obras de arte religioso que atesoramos"
-                  />
-                  <p className="text-muted-foreground">
-                    {patrimonioInfo.artisticValue}
-                  </p>
-                  <div className="mt-6">
-                    <h3 className="mb-4 text-lg font-semibold text-foreground">Colección de arte religioso:</h3>
-                    <div className="grid gap-6 md:grid-cols-3">
-                      {patrimonioInfo.religiousArt.map((art) => (
-                        <div key={art.title} className="overflow-hidden rounded-lg border border-border bg-card">
-                          {art.imageUrl ? (
-                            <div className="relative h-48 w-full">
-                              <Image
-                                src={art.imageUrl}
-                                alt={art.imageAlt}
-                                fill
-                                sizes="(max-width: 768px) 100vw, 33vw"
-                                className="object-cover"
-                              />
-                            </div>
-                          ) : (
-                            <div className="h-48 bg-gradient-to-b from-piedra/20 to-piedra/40" aria-hidden="true"></div>
-                          )}
-                          <div className="p-4">
-                            <h4 className="mb-2 text-lg font-semibold text-foreground">
-                              {art.title}
-                            </h4>
-                            <p className="text-muted-foreground">
-                              {art.description}
-                            </p>
-                            <p className="mt-2 text-xs text-muted-foreground">
-                              <em>{art.period}</em>
-                            </p>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </Container>
-              </Section>
-            </FadeIn>
-
-            {/* Cultural Value */}
-            <FadeIn delay={0.4} duration={0.5}>
-              <Section>
-                <Container>
-                  <SectionHeading
-                    title="Valor Cultural"
-                    description="Identidad y expresiones vivas de la comunidad"
-                  />
-                  <p className="text-muted-foreground">
-                    {patrimonioInfo.culturalValue}
-                  </p>
-                  <div className="mt-6">
-                    <p className="text-muted-foreground">
-                      Cada año, durante las festividades en honor a la Virgen, la comunidad expresa su identidad
-                      a través de danzas tradicionales, música andina, vestimentas típicas y gastronomía local.
-                      Estas manifestaciones culturales forman parte del patrimonio intangible del santuario.
-                    </p>
-                  </div>
-                </Container>
-              </Section>
-            </FadeIn>
-
-            {/* Documentary Heritage */}
-            <FadeIn delay={0.6} duration={0.5}>
-              <Section className="bg-marfil">
-                <Container>
-                  <SectionHeading
-                    title="Herencia Documental"
-                    description="Archivos que preservan la memoria escrita"
-                  />
-                  <p className="text-muted-foreground">
-                    {patrimonioInfo.documentaryHeritage}
-                  </p>
-                  <div className="mt-6">
-                    <Link
-                      href="/santuario/archivo-historico"
-                      className="inline-flex items-center rounded-md bg-dorado-oscuro px-4 py-2 text-sm font-medium text-blanco transition-normal hover:bg-dorado-oscuro/90"
-                    >
-                      Visitar el archivo histórico
-                      <span className="ml-2" aria-hidden="true">→</span>
-                    </Link>
-                  </div>
-                </Container>
-              </Section>
-            </FadeIn>
-
-            {/* Call to Action */}
-            <FadeIn delay={0.8} duration={0.5}>
-              <Section className="bg-dorado-oscuro">
-                <Container className="py-12 text-center">
-                  <h2 className="mb-4 text-3xl font-bold text-blanco">
-                    Ven a descubrir nuestros tesoros
-                  </h2>
-                  <p className="mx-auto mb-6 max-w-2xl text-xl text-blanco/90">
-                    Acércate y conoce de cerca el legado histórico, artístico y cultural
-                    que hemos preservado por más de cuatro siglos.
-                  </p>
-                  <div className="flex flex-wrap justify-center gap-4">
-                    <Link
-                      href="/visita"
-                      className="flex items-center rounded-md bg-blanco px-6 py-3 text-sm font-medium text-dorado-oscuro transition-normal hover:bg-marfil"
-                    >
-                      Planifica tu visita
-                      <span className="ml-2" aria-hidden="true">→</span>
-                    </Link>
-                    <Link
-                      href="/fe/solicitar-misa"
-                      className="flex items-center rounded-md border border-blanco bg-transparent px-6 py-3 text-sm font-medium text-blanco transition-normal hover:bg-blanco/10"
-                    >
-                      Solicitar una misa
-                      <span className="ml-2" aria-hidden="true">→</span>
-                    </Link>
-                  </div>
-                </Container>
-              </Section>
+            <FadeIn delay={0.08} className="lg:col-span-6">
+              <p className="eyebrow text-tierra">Valor artístico</p>
+              <h2 className="display-section mt-5 text-marron">Arte religioso andino</h2>
+              <p className="mt-7 leading-relaxed text-muted-foreground">
+                {patrimonioInfo.artisticValue}
+              </p>
             </FadeIn>
           </div>
         </Container>
-      </section>
+      </Section>
+
+      {/* Colección de arte religioso: inventario editorial */}
+      <Section className="bg-blanco">
+        <Container>
+          <FadeIn>
+            <p className="eyebrow text-tierra">Colección</p>
+            <h2 className="display-section mt-5 text-marron">Obras que custodia el templo</h2>
+          </FadeIn>
+          <ol className="mt-12 border-t border-tierra/20">
+            {patrimonioInfo.religiousArt.map((art, i) => (
+              <FadeIn key={art.title} delay={Math.min(i * 0.07, 0.25)}>
+                <li className="grid gap-2 border-b border-tierra/20 py-8 sm:grid-cols-[8rem_1fr_8rem] sm:items-baseline sm:gap-8">
+                  <span className="text-[0.62rem] font-semibold uppercase tracking-[0.24em] text-dorado-oscuro">
+                    {art.period}
+                  </span>
+                  <span>
+                    <span className="block font-heading text-2xl font-medium text-marron">{art.title}</span>
+                    <span className="mt-2 block max-w-2xl leading-relaxed text-muted-foreground">
+                      {art.description}
+                    </span>
+                  </span>
+                  <span className="hidden text-right font-heading text-lg tabular-nums text-tierra/70 sm:block">
+                    {String(i + 1).padStart(2, '0')}
+                  </span>
+                </li>
+              </FadeIn>
+            ))}
+          </ol>
+        </Container>
+      </Section>
+
+      {/* Valor cultural + herencia documental */}
+      <Section className="bg-marfil">
+        <Container>
+          <div className="grid gap-14 lg:grid-cols-12 lg:gap-20">
+            <FadeIn className="lg:col-span-6">
+              <p className="eyebrow text-tierra">Valor cultural</p>
+              <h2 className="display-section mt-5 text-marron">Identidad viva</h2>
+              <p className="mt-7 leading-relaxed text-muted-foreground">
+                {patrimonioInfo.culturalValue}
+              </p>
+              <p className="mt-5 leading-relaxed text-muted-foreground">
+                Cada año, durante las festividades en honor a la Virgen, la comunidad expresa su identidad
+                a través de danzas tradicionales, música andina, vestimentas típicas y gastronomía local.
+                Estas manifestaciones culturales forman parte del patrimonio intangible del santuario.
+              </p>
+            </FadeIn>
+            <FadeIn delay={0.08} className="lg:col-span-6">
+              <p className="eyebrow text-tierra">Herencia documental</p>
+              <h2 className="display-section mt-5 text-marron">El archivo histórico</h2>
+              <p className="mt-7 leading-relaxed text-muted-foreground">
+                {patrimonioInfo.documentaryHeritage}
+              </p>
+              <Link
+                href="/santuario/archivo-historico"
+                className="group mt-8 inline-flex items-center gap-3 text-[0.7rem] font-semibold uppercase tracking-[0.26em] text-marron transition-colors duration-300 hover:text-dorado-oscuro"
+              >
+                <span className="border-b border-marron/30 pb-1.5 transition-colors duration-300 group-hover:border-dorado">
+                  Visitar el archivo histórico
+                </span>
+                <ArrowRight
+                  className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1"
+                  aria-hidden="true"
+                />
+              </Link>
+            </FadeIn>
+          </div>
+        </Container>
+      </Section>
     </main>
   );
 }

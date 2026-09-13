@@ -26,6 +26,7 @@ import {
   fallbackNews,
   fallbackPages,
   fallbackSacraments,
+  fallbackSlides,
 } from '@/lib/seed-data';
 import type {
   Announcement,
@@ -42,6 +43,7 @@ import type {
   Page,
   Sacrament,
   SacramentRequest,
+  Slide,
 } from '@/types/database';
 
 type AdminDb = NonNullable<typeof supabaseAdmin>;
@@ -176,6 +178,20 @@ export async function getAllGalleryItemsAdmin(): Promise<GalleryItem[]> {
     if (error || !data) return fallbackGalleryItems;
     return data as unknown as GalleryItem[];
   });
+}
+
+/** Todos los slides (incluye inactivos) para el gestor del panel. */
+export async function getAllSlidesAdmin(): Promise<Slide[]> {
+  const fallback = fallbackSlides;
+  const db = await getAdminDb();
+  if (!db) return fallback;
+  try {
+    const { data, error } = await db.from('slides').select('*').order('order_index', { ascending: true });
+    if (error || !data) return fallback;
+    return data as unknown as Slide[];
+  } catch {
+    return fallback;
+  }
 }
 
 // ---------------------------------------------------------------------------

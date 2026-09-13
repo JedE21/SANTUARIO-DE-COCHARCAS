@@ -16,6 +16,7 @@ import type {
   Sacrament,
   SacramentType,
   HomeSection,
+  Slide,
 } from '@/types/database';
 
 export const fallbackSiteSettings: SiteSettings = {
@@ -211,6 +212,43 @@ export const fallbackSacraments: Sacrament[] = [
   { id: 'seed-sac-2', name: 'Confirmación', slug: 'confirmacion', description: 'Acompañamiento catequético para la Confirmación.', requirements: 'Catequesis previa y coordinación pastoral.', image_url: '/images/cocharcas-sacrament.svg', active: true, position: 2 },
   { id: 'seed-sac-3', name: 'Matrimonio', slug: 'matrimonio', description: 'Orientación para la celebración del Matrimonio.', requirements: 'Partidas de bautismo y entrevista pastoral.', image_url: '/images/cocharcas-sacrament.svg', active: true, position: 3 },
   { id: 'seed-sac-4', name: 'Primera Comunión', slug: 'primera-comunion', description: 'Preparación para la Primera Comunión.', requirements: 'Catequesis previa y partida de bautismo.', image_url: '/images/cocharcas-sacrament.svg', active: true, position: 4 },
+];
+
+/** Slides de demostración (imágenes locales reales del santuario). */
+export const fallbackSlides: Slide[] = [
+  // HOME
+  { id: 'seed-slide-home-1', section: 'home', title: 'Santuario de Nuestra Señora de Cocharcas', description: 'Fe, historia y tradición en el corazón de los Andes.', image_url: '/images/santuario/santuario-exterior.jpg', order_index: 0, is_active: true },
+  { id: 'seed-slide-home-2', section: 'home', title: 'Fachada del templo', description: 'Piedra tallada entre los cerros de Apurímac.', image_url: '/images/santuario/santuario-plaza.jpg', order_index: 1, is_active: true },
+  { id: 'seed-slide-home-3', section: 'home', title: 'Nuestra Señora de Cocharcas', description: 'Detalle del óleo colonial que guarda la memoria del pueblo.', image_url: '/images/santuario/pintura-detalle.jpg', order_index: 2, is_active: true },
+  { id: 'seed-slide-home-4', section: 'home', title: 'La imagen de la Virgen', description: 'Devoción mariana que atraviesa generaciones.', image_url: '/images/santuario/pintura-colonial.jpg', order_index: 3, is_active: true },
+  // SANTUARIO
+  { id: 'seed-slide-santuario-1', section: 'santuario', title: 'Fachada del Santuario', description: 'Portada principal de piedra tallada.', image_url: '/images/santuario/santuario-plaza.jpg', button_text: 'Conocer la arquitectura', button_url: '/santuario/arquitectura', order_index: 0, is_active: true },
+  { id: 'seed-slide-santuario-2', section: 'santuario', title: 'Torres y cúpulas', description: 'Silueta del templo entre los cerros de Chincheros.', image_url: '/images/santuario/santuario-exterior.jpg', button_text: 'Historia del templo', button_url: '/santuario/historia', order_index: 1, is_active: true },
+  { id: 'seed-slide-santuario-3', section: 'santuario', title: 'Patrimonio del santuario', description: 'Arte religioso y memoria que se conserva.', image_url: '/images/santuario/pintura-detalle.jpg', button_text: 'Ver el patrimonio', button_url: '/santuario/patrimonio', order_index: 2, is_active: true },
+  // FE Y PEREGRINACIÓN
+  { id: 'seed-slide-fe-1', section: 'fe-peregrinacion', title: 'Caminos de fe', description: 'Peregrinos que llegan cada año al santuario.', image_url: '/images/santuario/santuario-exterior.jpg', button_text: 'Planifica tu visita', button_url: '/visita', order_index: 0, is_active: true },
+  { id: 'seed-slide-fe-2', section: 'fe-peregrinacion', title: 'Oración y devoción', description: 'La casa de la Virgen, abierta a todos los pueblos.', image_url: '/images/santuario/santuario-plaza.jpg', button_text: 'Vida de fe', button_url: '/fe', order_index: 1, is_active: true },
+  // FESTIVIDADES
+  { id: 'seed-slide-fest-1', section: 'festividades', title: 'Fiesta de la Virgen de Cocharcas', description: 'Cada 8 de septiembre, el pueblo celebra a su patrona.', image_url: '/images/santuario/pintura-colonial.jpg', button_text: 'Ver festividades', button_url: '/festividades', order_index: 0, is_active: true },
+  { id: 'seed-slide-fest-2', section: 'festividades', title: 'Procesión y devoción popular', description: 'Danzas, música y fe que reúne a generaciones.', image_url: '/images/santuario/pintura-detalle.jpg', button_text: 'Conocer el programa', button_url: '/festividades', order_index: 1, is_active: true },
+  // HISTORIA
+  { id: 'seed-slide-hist-1', section: 'historia', title: 'Cuatro siglos de devoción', description: 'Desde la llegada de la imagen hasta el santuario de piedra.', image_url: '/images/santuario/santuario-exterior.jpg', button_text: 'Conocer la historia', button_url: '/santuario/historia', order_index: 0, is_active: true },
+  { id: 'seed-slide-hist-2', section: 'historia', title: 'El óleo de 1751', description: 'Testimonio del arte colonial andino.', image_url: '/images/santuario/pintura-colonial.jpg', button_text: 'Ver el patrimonio', button_url: '/santuario/patrimonio', order_index: 1, is_active: true },
+  // GALERÍA
+  { id: 'seed-slide-gal-1', section: 'galeria', title: 'El santuario en imágenes', description: 'Vistas del templo, las celebraciones y la comunidad.', image_url: '/images/santuario/santuario-plaza.jpg', button_text: 'Explorar la galería', button_url: '/galeria', order_index: 0, is_active: true },
+  { id: 'seed-slide-gal-2', section: 'galeria', title: 'La Virgen de Cocharcas', description: 'Imagen venerada en Apurímac desde 1598.', image_url: '/images/santuario/virgen-cocharcas.jpg', button_text: 'Conocer a la Virgen', button_url: '/santuario/nuestra-senora', order_index: 1, is_active: true },
+  // EVENTOS
+  { id: 'seed-slide-eventos-1', section: 'eventos', title: 'Agenda del santuario', description: 'Encuentros litúrgicos, peregrinaciones y actividades comunitarias.', image_url: '/images/santuario/santuario-exterior.jpg', button_text: 'Ver la agenda', button_url: '/eventos', order_index: 0, is_active: true },
+  { id: 'seed-slide-eventos-2', section: 'eventos', title: 'Fiesta y tradición', description: 'La comunidad celebrando su fe a lo largo del año.', image_url: '/images/santuario/pintura-detalle.jpg', button_text: 'Festividades', button_url: '/festividades', order_index: 1, is_active: true },
+  // NOTICIAS
+  { id: 'seed-slide-noticias-1', section: 'noticias', title: 'Novedades del santuario', description: 'Noticias pastorales, culturales y patrimoniales de la comunidad.', image_url: '/images/santuario/santuario-plaza.jpg', button_text: 'Leer las noticias', button_url: '/noticias', order_index: 0, is_active: true },
+  { id: 'seed-slide-noticias-2', section: 'noticias', title: 'Memoria que se comparte', description: 'La vida del pueblo contada desde su santuario.', image_url: '/images/santuario/pintura-colonial.jpg', button_text: 'Ver el archivo', button_url: '/santuario/archivo-historico', order_index: 1, is_active: true },
+  // VISITA
+  { id: 'seed-slide-visita-1', section: 'visita', title: 'Ven a Cocharcas', description: 'Información esencial para peregrinos y visitantes del santuario.', image_url: '/images/santuario/santuario-exterior.jpg', button_text: 'Planifica tu visita', button_url: '/visita', order_index: 0, is_active: true },
+  { id: 'seed-slide-visita-2', section: 'visita', title: 'Un pueblo que recibe al peregrino', description: 'Hospedaje, rutas y horarios para tu llegada.', image_url: '/images/santuario/santuario-plaza.jpg', button_text: 'Cómo llegar', button_url: '/visita', order_index: 1, is_active: true },
+  // CONTACTO
+  { id: 'seed-slide-contacto-1', section: 'contacto', title: 'Escríbenos', description: 'Estamos para orientarte en tu visita y en tus solicitudes pastorales.', image_url: '/images/santuario/santuario-plaza.jpg', button_text: 'Solicitudes pastorales', button_url: '/solicitudes', order_index: 0, is_active: true },
+  { id: 'seed-slide-contacto-2', section: 'contacto', title: 'La casa de la Virgen, abierta a todos', description: 'Consulta, sugiere o acompaña la misión del santuario.', image_url: '/images/santuario/virgen-cocharcas.jpg', button_text: 'Planifica tu visita', button_url: '/visita', order_index: 1, is_active: true },
 ];
 
 export const fallbackSacramentTypes: SacramentType[] = [

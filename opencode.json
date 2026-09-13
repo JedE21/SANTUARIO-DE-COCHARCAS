@@ -6,5 +6,19 @@
       "url": "https://mcp.supabase.com/mcp?project_ref=iymntiqhhequmdqhfcds&features=database%2Cdevelopment%2Cdebugging%2Cfunctions",
       "enabled": true
     }
+  },
+  "provider": {
+    "sambanova": {
+      "npm": "@ai-sdk/openai-compatible",
+      "name": "SambaNova",
+      "options": {
+        "baseURL": "https://api.sambanova.ai/v1"
+      },
+      "models": {
+        "DeepSeek-V3.1": {
+          "name": "DeepSeek V3.1"
+        }
+      }
+    }
   }
 }

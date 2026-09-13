@@ -6,6 +6,7 @@ import { defaultOgImages, siteDescription, siteKeywords, siteName, siteUrl } fro
 const cormorant = Cormorant_Garamond({
   subsets: ['latin'],
   weight: ['400', '500', '600', '700'],
+  style: ['normal', 'italic'],
   variable: '--font-title',
   display: 'swap',
 });
@@ -45,6 +46,9 @@ export const metadata: Metadata = {
     description: siteDescription,
     images: defaultOgImages().map((img) => img.url),
   },
+  icons: {
+    icon: '/icon.png',
+  },
   robots: {
     index: true,
     follow: true,
@@ -58,7 +62,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: '#F7F3EA',
+  themeColor: '#171615',
   width: 'device-width',
   initialScale: 1,
 };

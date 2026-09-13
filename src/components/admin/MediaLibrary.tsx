@@ -4,6 +4,7 @@ import * as React from 'react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { ConfirmDialog } from '@/components/admin/ConfirmDialog';
 import { uploadMediaAsset, deleteMediaAsset, type ActionResult } from '@/lib/actions';
 import type { MediaRow } from '@/lib/queries-admin';
 
@@ -19,6 +20,7 @@ export function MediaLibrary({ items }: { items: MediaRow[] }) {
   const [result, setResult] = React.useState<ActionResult | null>(null);
   const [uploading, setUploading] = React.useState(false);
   const [deleting, setDeleting] = React.useState<string | null>(null);
+  const [confirming, setConfirming] = React.useState<MediaRow | null>(null);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   async function onUpload(ev: React.FormEvent<HTMLFormElement>) {
@@ -36,13 +38,14 @@ export function MediaLibrary({ items }: { items: MediaRow[] }) {
     }
   }
 
-  async function onDelete(item: MediaRow) {
-    if (!window.confirm(`¿Eliminar "${item.name}" definitivamente?`)) return;
-    setDeleting(item.id);
-    const res = await deleteMediaAsset(item.id);
+  async function performDelete() {
+    if (!confirming) return;
+    setDeleting(confirming.id);
+    const res = await deleteMediaAsset(confirming.id);
     setDeleting(null);
+    setConfirming(null);
     if (res.ok) {
-      setList((prev) => prev.filter((m) => m.id !== item.id));
+      setList((prev) => prev.filter((m) => m.id !== confirming.id));
     } else {
       setResult({ ok: false, error: res.error });
     }
@@ -114,9 +117,9 @@ export function MediaLibrary({ items }: { items: MediaRow[] }) {
                   </button>
                   <button
                     type="button"
-                    onClick={() => onDelete(item)}
+                    onClick={() => setConfirming(item)}
                     disabled={deleting === item.id}
-                    className="rounded-md border border-red-200 px-2 py-1 text-xs text-red-700 transition-normal hover:bg-red-50 disabled:opacity-50"
+                    className="rounded-md border border-destructive/25 px-2 py-1 text-xs font-medium text-destructive transition-normal hover:bg-destructive/5 disabled:opacity-50"
                   >
                     {deleting === item.id ? 'Eliminando…' : 'Eliminar'}
                   </button>
@@ -126,6 +129,14 @@ export function MediaLibrary({ items }: { items: MediaRow[] }) {
           ))}
         </div>
       )}
+
+      <ConfirmDialog
+        open={confirming !== null}
+        title={`¿Eliminar «${confirming?.name ?? ''}»?`}
+        busy={deleting !== null}
+        onConfirm={performDelete}
+        onCancel={() => setConfirming(null)}
+      />
     </div>
   );
 }

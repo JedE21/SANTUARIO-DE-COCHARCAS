@@ -2,8 +2,10 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { Container, Section, Badge, Card } from '@/components/public';
+import { ArrowRight } from 'lucide-react';
+import { Container, Section } from '@/components/public';
 import { JsonLd } from '@/components/shared/json-ld';
+import { FadeIn } from '@/components/motion';
 import { getNewsBySlug, getNewsList, getNewsCategories } from '@/lib/queries';
 import { absoluteUrl, ogImagePath, pageMetadata, siteName } from '@/lib/seo';
 
@@ -23,11 +25,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 function formatDate(value?: string | null) {
   if (!value) return '';
-  return new Date(value).toLocaleDateString('es-PE', { day: 'numeric', month: 'long', year: 'numeric' });
+  return new Date(value)
+    .toLocaleDateString('es-PE', { day: '2-digit', month: 'short', year: 'numeric' })
+    .replace(/\./g, '')
+    .toUpperCase();
 }
 
 export default async function NoticiaPage({ params }: Props) {
-  const [item, news, categories] = await Promise.all([getNewsBySlug(params.slug), getNewsList(4), getNewsCategories()]);
+  const [item, news, categories] = await Promise.all([
+    getNewsBySlug(params.slug),
+    getNewsList(4),
+    getNewsCategories(),
+  ]);
   if (!item) notFound();
   const category = categories.find((c) => c.id === item.category_id);
   const related = news.filter((n) => n.id !== item.id).slice(0, 3);
@@ -49,46 +58,83 @@ export default async function NoticiaPage({ params }: Props) {
   return (
     <main>
       <JsonLd data={jsonLd} />
+
+      {/* Cabecera editorial del artículo */}
       <Section className="bg-marfil">
-        <Container className="py-16">
+        <Container>
           <div className="mx-auto max-w-3xl">
-            <Badge className="mb-4">{category?.name || 'Noticia'}</Badge>
-            <h1 className="text-4xl font-bold">{item.title}</h1>
-            <p className="mt-4 text-sm text-muted-foreground">{formatDate(item.published_at)}</p>
+            <FadeIn>
+              <p className="eyebrow text-tierra">
+                {category?.name || 'Noticia'}
+                {item.published_at ? ` · ${formatDate(item.published_at)}` : ''}
+              </p>
+              <h1 className="display-section mt-5 text-marron">{item.title}</h1>
+            </FadeIn>
+            {item.cover_image_url ? (
+              <FadeIn delay={0.1} className="mt-10">
+                <div className="relative aspect-[16/9] overflow-hidden bg-piedra/30">
+                  <Image
+                    src={item.cover_image_url}
+                    alt={item.title}
+                    fill
+                    priority
+                    sizes="(max-width: 768px) 100vw, 768px"
+                    className="object-cover"
+                  />
+                </div>
+              </FadeIn>
+            ) : null}
           </div>
         </Container>
       </Section>
 
-      <Section className="bg-background">
+      {/* Cuerpo del artículo */}
+      <Section className="bg-blanco">
         <Container>
-          <article className="mx-auto max-w-3xl overflow-hidden rounded-xl border border-border bg-card">
-            {item.cover_image_url && (
-              <div className="relative aspect-video w-full overflow-hidden">
-                <Image src={item.cover_image_url} alt={item.title} fill sizes="(max-width: 768px) 100vw, 768px" priority className="object-cover" />
-              </div>
-            )}
-            <div className="space-y-5 p-8">
-              {item.excerpt ? <p className="text-lg font-medium text-foreground">{item.excerpt}</p> : null}
-              <p className="leading-relaxed text-muted-foreground">{item.content || 'Contenido próximamente disponible.'}</p>
+          <article className="mx-auto max-w-3xl">
+            {item.excerpt ? (
+              <p className="font-heading text-xl italic leading-relaxed text-marron sm:text-2xl">
+                {item.excerpt}
+              </p>
+            ) : null}
+            <div className="mt-8 space-y-6 text-lg leading-relaxed text-muted-foreground">
+              {(item.content || 'Contenido próximamente disponible.')
+                .split(/\n{2,}/)
+                .filter(Boolean)
+                .map((paragraph, i) => (
+                  <p key={i}>{paragraph}</p>
+                ))}
             </div>
           </article>
 
-          {related.length > 0 && (
-            <div className="mx-auto mt-16 max-w-5xl">
-              <h2 className="text-2xl font-semibold">Otras noticias</h2>
-              <div className="mt-6 grid gap-6 md:grid-cols-3">
+          {related.length > 0 ? (
+            <div className="mx-auto mt-20 max-w-4xl">
+              <p className="eyebrow text-tierra">Continúa leyendo</p>
+              <ol className="mt-8 border-t border-tierra/20">
                 {related.map((n) => (
-                  <Card key={n.id} className="overflow-hidden">
-                    <Link href={`/noticias/${n.slug}`} className="block p-6">
-                      <Badge variant="outline" className="mb-3">{categories.find((c) => c.id === n.category_id)?.name || 'Noticia'}</Badge>
-                      <h3 className="text-lg font-semibold">{n.title}</h3>
-                      <p className="mt-2 text-sm text-muted-foreground line-clamp-3">{n.excerpt || n.content}</p>
+                  <li key={n.id} className="border-b border-tierra/20">
+                    <Link
+                      href={`/noticias/${n.slug}`}
+                      className="group flex items-center justify-between gap-6 py-6"
+                    >
+                      <span>
+                        <span className="block text-[0.62rem] font-semibold uppercase tracking-[0.22em] text-tierra">
+                          {formatDate(n.published_at)}
+                        </span>
+                        <span className="mt-1.5 block font-heading text-xl font-medium text-marron transition-colors duration-300 group-hover:text-dorado-oscuro sm:text-2xl">
+                          {n.title}
+                        </span>
+                      </span>
+                      <ArrowRight
+                        className="h-4 w-4 shrink-0 text-tierra/60 transition-all duration-300 group-hover:translate-x-1.5 group-hover:text-dorado-oscuro"
+                        aria-hidden="true"
+                      />
                     </Link>
-                  </Card>
+                  </li>
                 ))}
-              </div>
+              </ol>
             </div>
-          )}
+          ) : null}
         </Container>
       </Section>
     </main>

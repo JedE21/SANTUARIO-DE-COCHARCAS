@@ -14,6 +14,7 @@ export default async function AdminGaleriaPage() {
         <AdminCrud
           table="gallery_albums"
           rows={albums}
+          entityLabel="álbum"
           emptyMessage="No hay álbumes creados."
           columns={[
             { key: 'title', label: 'Álbum' },
@@ -45,6 +46,7 @@ export default async function AdminGaleriaPage() {
         <AdminCrud
           table="gallery_items"
           rows={items}
+          entityLabel="fotografía"
           emptyMessage="No hay imágenes en la galería."
           columns={[
             { key: 'title', label: 'Título' },

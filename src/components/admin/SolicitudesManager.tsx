@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import { Button } from '@/components/ui/button';
+import { ConfirmDialog } from '@/components/admin/ConfirmDialog';
 import { updateRequestStatus, adminGenericDelete, type ActionResult } from '@/lib/actions';
 import {
   REQUEST_STATUSES,
@@ -55,6 +56,7 @@ function DetailRow({ request, onSaved }: { request: UnifiedRequest; onSaved: () 
   const [notes, setNotes] = React.useState(request.admin_notes ?? '');
   const [saving, setSaving] = React.useState(false);
   const [deleting, setDeleting] = React.useState(false);
+  const [confirmOpen, setConfirmOpen] = React.useState(false);
   const [result, setResult] = React.useState<ActionResult | null>(null);
 
   async function onSave() {
@@ -66,8 +68,11 @@ function DetailRow({ request, onSaved }: { request: UnifiedRequest; onSaved: () 
     if (res.ok) onSaved();
   }
 
-  async function onDelete() {
-    if (!window.confirm(`¿Eliminar la solicitud ${request.request_number ?? ''}? Esta acción no se puede deshacer.`)) return;
+  function onDelete() {
+    setConfirmOpen(true);
+  }
+
+  async function performDelete() {
     setDeleting(true);
     setResult(null);
     const fd = new FormData();
@@ -75,6 +80,7 @@ function DetailRow({ request, onSaved }: { request: UnifiedRequest; onSaved: () 
     fd.set('id', request.id);
     const res = await adminGenericDelete(fd);
     setDeleting(false);
+    setConfirmOpen(false);
     if (res.ok) {
       onSaved();
     } else {
@@ -131,9 +137,9 @@ function DetailRow({ request, onSaved }: { request: UnifiedRequest; onSaved: () 
                 type="button"
                 onClick={onDelete}
                 disabled={saving || deleting}
-                className="rounded-md border border-red-200 px-3 py-2 text-xs font-medium text-red-700 transition-normal hover:bg-red-50 disabled:opacity-50"
+                className="rounded-md border border-destructive/25 px-3 py-2 text-xs font-medium text-destructive transition-normal hover:bg-destructive/5 disabled:opacity-50"
               >
-                {deleting ? 'Eliminando…' : 'Eliminar solicitud'}
+                Eliminar solicitud
               </button>
               {result?.error && <span className="text-xs text-red-700">{result.error}</span>}
               {result?.ok && !result.error && <span className="text-xs text-green-700">{result.message}</span>}
@@ -141,6 +147,13 @@ function DetailRow({ request, onSaved }: { request: UnifiedRequest; onSaved: () 
           </div>
         </div>
       </td>
+      <ConfirmDialog
+        open={confirmOpen}
+        title={`¿Eliminar la solicitud ${request.request_number ?? ''}?`}
+        busy={deleting}
+        onConfirm={performDelete}
+        onCancel={() => setConfirmOpen(false)}
+      />
     </tr>
   );
 }
@@ -174,14 +187,14 @@ export function SolicitudesManager({ requests }: { requests: UnifiedRequest[] })
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-center gap-2">
-        <div className="flex overflow-hidden rounded-md border border-piedra/30">
+      <div className="flex flex-wrap items-center gap-2.5">
+        <div className="flex overflow-hidden rounded-md border border-piedra/40">
           {(['all', 'mass', 'sacrament'] as const).map((t) => (
             <button
               key={t}
               type="button"
               onClick={() => setTypeFilter(t)}
-              className={`px-3 py-1.5 text-sm transition-normal ${typeFilter === t ? 'bg-carbone text-blanco' : 'bg-blanco text-carbone hover:bg-marfil'}`}
+              className={`px-3.5 py-1.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-dorado-oscuro ${typeFilter === t ? 'bg-marron text-blanco' : 'bg-blanco text-marron hover:bg-marfil'}`}
             >
               {t === 'all' ? 'Todas' : t === 'mass' ? 'Misas' : 'Sacramentos'}
             </button>
@@ -190,7 +203,8 @@ export function SolicitudesManager({ requests }: { requests: UnifiedRequest[] })
         <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value as 'all' | RequestStatus)}
-          className="rounded-md border border-piedra/30 bg-blanco px-3 py-1.5 text-sm focus:border-dorado focus:outline-none"
+          aria-label="Filtrar por estado"
+          className="rounded-md border border-piedra/40 bg-blanco px-3 py-1.5 text-sm text-marron focus:border-dorado focus:outline-none focus:ring-1 focus:ring-dorado"
         >
           <option value="all">Todos los estados ({counts.all ?? 0})</option>
           {REQUEST_STATUSES.map((s) => (
@@ -202,19 +216,19 @@ export function SolicitudesManager({ requests }: { requests: UnifiedRequest[] })
       </div>
 
       {filtered.length === 0 ? (
-        <div className="rounded-lg border border-piedra/20 bg-blanco p-8 text-center text-sm text-carbone/60">
+        <div className="rounded-lg border border-dashed border-piedra/50 bg-blanco p-10 text-center text-sm text-muted-foreground">
           No hay solicitudes con esos filtros.
         </div>
       ) : (
-        <div className="overflow-x-auto rounded-lg border border-piedra/20 bg-blanco shadow-sm">
-          <table className="min-w-full divide-y divide-piedra/10 text-sm">
-            <thead className="bg-marfil">
+        <div className="overflow-x-auto rounded-lg border border-piedra/30 bg-blanco">
+          <table className="min-w-full divide-y divide-piedra/20 text-sm">
+            <thead className="bg-marfil/60">
               <tr>
-                <th className="px-4 py-3 text-left font-semibold text-carbone">N° / Tipo</th>
-                <th className="px-4 py-3 text-left font-semibold text-carbone">Solicitante</th>
-                <th className="px-4 py-3 text-left font-semibold text-carbone">Fecha deseada</th>
-                <th className="px-4 py-3 text-left font-semibold text-carbone">Estado</th>
-                <th className="px-4 py-3 text-left font-semibold text-carbone">Acción</th>
+                {['N° / Tipo', 'Solicitante', 'Fecha deseada', 'Estado', 'Acción'].map((label) => (
+                  <th key={label} className="px-4 py-3 text-left text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-tierra">
+                    {label}
+                  </th>
+                ))}
               </tr>
             </thead>
             <tbody className="divide-y divide-piedra/10">

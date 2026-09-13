@@ -5,144 +5,245 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { usePrefersReducedMotion } from '@/hooks/use-prefers-reduced-motion';
-import { easeOutSoft, fadeUpStrong, heroStagger, lineGrow } from '@/components/motion/variants';
+import { easeOutSoft, fadeUpStrong, heroStagger } from '@/components/motion/variants';
 
 interface HeroCocharcasProps {
   badge: string;
   title: string;
   description: string;
   imageUrl?: string | null;
+  /** Slides administrados desde el panel (tabla `slides`, sección home). */
+  slides?: HeroSlide[];
 }
 
+interface HeroSlide {
+  src: string;
+  alt: string;
+}
+
+/** Fotografías reales del Santuario y de la Virgen de Cocharcas
+ *  (Wikimedia Commons, servidas localmente para máxima fiabilidad). */
+const DEFAULT_SLIDES: HeroSlide[] = [
+  {
+    src: '/images/santuario/santuario-exterior.jpg',
+    alt: 'Santuario de Cocharcas: torres y cúpulas de piedra entre los cerros de Apurímac',
+  },
+  {
+    src: '/images/santuario/santuario-plaza.jpg',
+    alt: 'Fachada principal del Santuario de Nuestra Señora de Cocharcas',
+  },
+  {
+    src: '/images/santuario/pintura-detalle.jpg',
+    alt: 'Nuestra Señora de Cocharcas, detalle de óleo colonial de 1751',
+  },
+  {
+    src: '/images/santuario/pintura-colonial.jpg',
+    alt: 'Nuestra Señora de Cocharcas, pintura colonial peruana de 1751',
+  },
+];
+
+const SLIDE_DURATION_MS = 6500;
+
 /**
- * Hero cinematografico del Santuario: pantalla casi completa, fotografia
- * protagonista (administrable desde el CMS), composicion editorial
- * abajo-izquierda, titulo serif grande, layout inspirado en sitios de
- * arquitectura patrimonial premium. Respeta prefers-reduced-motion.
+ * Hero cinematográfico del Santuario: pantalla completa, fotografía real
+ * protagonista en slider con crossfade lento, composición editorial centrada,
+ * contador de escenas e indicador de descenso. Respeta prefers-reduced-motion.
  */
-export function HeroCocharcas({ badge, title, description, imageUrl }: HeroCocharcasProps) {
+export function HeroCocharcas({ badge, title, description, imageUrl, slides: dbSlides }: HeroCocharcasProps) {
   const reduced = usePrefersReducedMotion();
-  const hasPhoto = Boolean(imageUrl && !imageUrl.endsWith('.svg'));
   const ref = React.useRef<HTMLElement>(null);
 
-  // Parallax sutil: la imagen se desplaza un poco mas lento que la pagina
+  const slides = React.useMemo<HeroSlide[]>(() => {
+    // Prioridad 1: slides administrados en el panel (sección home).
+    if (dbSlides && dbSlides.length > 0) return dbSlides;
+    // Prioridad 2: imagen de la sección hero configurada.
+    if (imageUrl && !imageUrl.endsWith('.svg')) {
+      return [{ src: imageUrl, alt: title }, ...DEFAULT_SLIDES.filter((s) => s.src !== imageUrl)];
+    }
+    return DEFAULT_SLIDES;
+  }, [imageUrl, title, dbSlides]);
+
+  const [index, setIndex] = React.useState(0);
+
+  // Autoplay con crossfade; se pausa cuando la pestaña no es visible
+  React.useEffect(() => {
+    if (slides.length < 2) return;
+    let timer: ReturnType<typeof setInterval> | null = null;
+    const start = () => {
+      stop();
+      timer = setInterval(() => setIndex((i) => (i + 1) % slides.length), SLIDE_DURATION_MS);
+    };
+    const stop = () => {
+      if (timer) clearInterval(timer);
+      timer = null;
+    };
+    const onVisibility = () => (document.hidden ? stop() : start());
+    start();
+    document.addEventListener('visibilitychange', onVisibility);
+    return () => {
+      stop();
+      document.removeEventListener('visibilitychange', onVisibility);
+    };
+  }, [slides.length]);
+
+  // Parallax muy sutil: el fondo se desplaza un poco más lento que la página
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] });
-  const imageY = useTransform(scrollYProgress, [0, 1], ['0%', '14%']);
-  const textY = useTransform(scrollYProgress, [0, 1], ['0%', '18%']);
+  const imageY = useTransform(scrollYProgress, [0, 1], ['0%', '12%']);
+  const textY = useTransform(scrollYProgress, [0, 1], ['0%', '26%']);
+  const textOpacity = useTransform(scrollYProgress, [0, 0.6], [1, 0]);
+
+  const goTo = (i: number) => setIndex(i);
 
   return (
-    <section ref={ref} className="relative min-h-[94svh] overflow-hidden bg-azul text-blanco">
-      {/* Fotografia protagonista / fondo azul institucional */}
+    <section
+      ref={ref}
+      aria-label={title}
+      className="relative -mt-16 flex min-h-[100svh] flex-col overflow-hidden bg-negro text-blanco lg:-mt-20"
+    >
+      {/* ── Slider de fotografías (crossfade CSS, visible sin JS) ────── */}
       <motion.div
-        className="absolute inset-0"
-        style={reduced ? undefined : { y: imageY, scale: 1.08 }}
         aria-hidden="true"
+        className="absolute inset-0"
+        style={reduced ? undefined : { y: imageY }}
       >
-        {hasPhoto ? (
-          <Image
-            src={imageUrl as string}
-            alt={title}
-            fill
-            priority
-            sizes="100vw"
-            className="object-cover"
-          />
-        ) : (
-          <div className="h-full w-full bg-gradient-to-br from-azul-oscuro via-azul to-azul-oscuro" />
-        )}
+        {slides.map((slide, i) => (
+          <div
+            key={slide.src}
+            className={`absolute inset-0 transition-opacity ease-in-out ${
+              i === index ? 'opacity-100' : 'opacity-0'
+            } duration-[1400ms]`}
+          >
+            <div className={`h-full w-full ${i === index ? 'hero-kenburns' : ''}`}>
+              <Image
+                src={slide.src}
+                alt={slide.alt}
+                fill
+                priority={i === 0}
+                sizes="100vw"
+                className="object-cover"
+              />
+            </div>
+          </div>
+        ))}
       </motion.div>
 
-      {/* Overlap editorial: azul profundo + elegancia, sin grises baratos */}
+      {/* ── Veladura sutil: legibilidad sin apagar la fotografía ───────── */}
       <div
         aria-hidden="true"
-        className={
-          hasPhoto
-            ? 'absolute inset-0 bg-gradient-to-t from-azul-oscuro/95 via-azul/35 to-azul-oscuro/40'
-            : 'absolute inset-0 bg-[radial-gradient(ellipse_at_30%_10%,rgba(201,162,39,0.13),transparent_50%),radial-gradient(ellipse_at_85%_85%,rgba(143,36,52,0.10),transparent_45%)]'
-        }
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background:
+            'linear-gradient(180deg, rgba(23,22,21,0.58) 0%, rgba(23,22,21,0.22) 18%, rgba(23,22,21,0.10) 42%, rgba(23,22,21,0.60) 100%)',
+        }}
+      />
+      {/* Viñeta muy tenue para centrar la mirada */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background:
+            'radial-gradient(120% 90% at 50% 44%, transparent 58%, rgba(23,22,21,0.32) 100%)',
+        }}
       />
 
-      {/* Composicion abajo-izquierda (estilo editorial hoteleria de patrimonio) */}
+      {/* ── Composición editorial centrada ────────────────────────────── */}
       <motion.div
-        className="relative flex min-h-[94svh] items-end"
-        style={reduced ? undefined : { y: textY }}
+        className="relative z-10 flex flex-1 flex-col items-center justify-center px-4 pb-28 pt-32 text-center sm:px-6"
+        style={reduced ? undefined : { y: textY, opacity: textOpacity }}
         initial={reduced ? false : 'hidden'}
         animate="visible"
         variants={heroStagger}
       >
-        <div className="mx-auto w-full max-w-6xl px-4 pb-24 sm:px-6 lg:px-8">
-          <motion.p
-            variants={fadeUpStrong}
-            transition={{ duration: 0.6, ease: easeOutSoft }}
-            className="eyebrow text-dorado-claro"
-          >
-            {badge}
-          </motion.p>
+        <motion.div
+          aria-hidden="true"
+          variants={fadeUpStrong}
+          transition={{ duration: 0.9, ease: easeOutSoft }}
+          className="flex items-center gap-4 text-blanco/85 sm:gap-5"
+        >
+          <span className="h-px w-10 bg-gradient-to-r from-transparent to-dorado-claro/80 sm:w-16" />
+          <span className="text-[0.6rem] font-semibold uppercase tracking-[0.44em] sm:text-[0.65rem]">{badge}</span>
+          <span className="h-px w-10 bg-gradient-to-l from-transparent to-dorado-claro/80 sm:w-16" />
+        </motion.div>
 
-          <motion.h1
-            variants={fadeUpStrong}
-            transition={{ duration: 0.8, ease: easeOutSoft }}
-            className="display-xxl mt-6 max-w-3xl text-5xl text-blanco sm:text-6xl lg:text-7xl"
-          >
-            {title}
-          </motion.h1>
+        <motion.h1
+          variants={fadeUpStrong}
+          transition={{ duration: 1, ease: easeOutSoft }}
+          className="display-hero mt-8 max-w-5xl text-blanco [text-shadow:0_2px_30px_rgba(23,22,21,0.28)]"
+        >
+          {title}
+        </motion.h1>
 
-          <motion.div
-            aria-hidden="true"
-            variants={lineGrow}
-            transition={{ duration: 0.6, ease: easeOutSoft }}
-            className="mt-8 h-px w-28 origin-left bg-dorado"
-          />
+        <motion.p
+          variants={fadeUpStrong}
+          transition={{ duration: 1, ease: easeOutSoft }}
+          className="mt-8 max-w-2xl font-heading text-xl italic leading-relaxed text-blanco/90 sm:text-2xl"
+        >
+          {description}
+        </motion.p>
 
-          <motion.p
-            variants={fadeUpStrong}
-            transition={{ duration: 0.7, ease: easeOutSoft }}
-            className="mt-6 max-w-xl text-base text-marfil/90 sm:text-lg"
+        <motion.div
+          variants={fadeUpStrong}
+          transition={{ duration: 1, ease: easeOutSoft }}
+          className="mt-12"
+        >
+          <Link
+            href="/santuario"
+            className="group inline-flex items-center gap-3 text-[0.7rem] font-semibold uppercase tracking-[0.3em] text-blanco/90 transition-colors duration-300 hover:text-dorado-claro"
           >
-            {description}
-          </motion.p>
-
-          <motion.div
-            variants={fadeUpStrong}
-            transition={{ duration: 0.7, ease: easeOutSoft }}
-            className="mt-10 flex flex-wrap gap-4"
-          >
-            <Link
-              href="/santuario"
-              className="group inline-flex items-center rounded-sm bg-dorado px-7 py-3.5 text-[0.8rem] font-semibold uppercase tracking-[0.12em] text-azul-oscuro transition-all duration-300 hover:bg-dorado-claro focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-dorado focus-visible:ring-offset-2 focus-visible:ring-offset-azul"
+            <span className="border-b border-blanco/40 pb-1.5 transition-colors duration-300 group-hover:border-dorado-claro/70">
+              Descubrir el Santuario
+            </span>
+            <motion.span
+              aria-hidden="true"
+              animate={reduced ? undefined : { y: [0, 5, 0] }}
+              transition={reduced ? undefined : { duration: 2.2, repeat: Infinity, ease: 'easeInOut' }}
             >
-              Conocer el Santuario
-              <span className="ml-2.5 transition-transform duration-300 group-hover:translate-x-1" aria-hidden="true">
-                →
-              </span>
-            </Link>
-            <Link
-              href="/visita"
-              className="group inline-flex items-center rounded-sm border border-marfil/40 px-7 py-3.5 text-[0.8rem] font-semibold uppercase tracking-[0.12em] text-blanco transition-all duration-300 hover:border-dorado hover:text-dorado-claro focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-dorado focus-visible:ring-offset-2 focus-visible:ring-offset-azul"
-            >
-              Planifica tu visita
-            </Link>
-          </motion.div>
-        </div>
+              ↓
+            </motion.span>
+          </Link>
+        </motion.div>
       </motion.div>
 
-      {/* Indicador de scroll sobrio */}
+      {/* ── Pie del hero: numeración de escena + indicadores ──────────── */}
       <motion.div
-        aria-hidden="true"
+        aria-hidden={false}
         initial={reduced ? false : { opacity: 0 }}
-        animate={{ opacity: 0.75 }}
-        transition={{ delay: 1.6, duration: 1 }}
-        className="absolute bottom-8 right-6 hidden flex-col items-center gap-3 sm:flex lg:right-10"
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1.2, duration: 1 }}
+        className="relative z-10 flex items-center justify-between px-5 pb-8 sm:px-8 lg:px-12"
       >
-        <span className="text-[0.65rem] font-medium uppercase tracking-[0.3em] text-marfil/70 [writing-mode:vertical-rl]">
-          Descubre
-        </span>
-        <motion.span
-          className="h-10 w-px bg-dorado/70"
-          animate={reduced ? undefined : { scaleY: [0.4, 1, 0.4] }}
-          transition={reduced ? undefined : { duration: 2.4, repeat: Infinity, ease: 'easeInOut' }}
-          style={{ transformOrigin: 'top' }}
-        />
+        <p className="max-w-[16rem] text-[0.62rem] font-medium uppercase leading-relaxed tracking-[0.24em] text-blanco/60">
+          Santuario histórico · Cocharcas, Chincheros
+        </p>
+
+        <div className="flex items-center gap-5">
+          {slides.length > 1 ? (
+            <div className="flex items-center gap-2.5" role="tablist" aria-label="Escenas del santuario">
+              {slides.map((slide, i) => (
+                <button
+                  key={slide.src}
+                  type="button"
+                  role="tab"
+                  aria-selected={i === index}
+                  aria-label={`Escena ${i + 1}: ${slide.alt}`}
+                  onClick={() => goTo(i)}
+                  className="group relative flex h-6 items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-dorado-claro"
+                >
+                  <span
+                    className={`block h-px transition-all duration-500 ${
+                      i === index ? 'w-10 bg-dorado-claro' : 'w-5 bg-blanco/40 group-hover:bg-blanco/80'
+                    }`}
+                  />
+                </button>
+              ))}
+            </div>
+          ) : null}
+          <p className="font-heading text-sm tabular-nums tracking-[0.2em] text-blanco/70">
+            {String(index + 1).padStart(2, '0')}
+            <span className="mx-1.5 text-blanco/40">/</span>
+            <span className="text-blanco/50">{String(slides.length).padStart(2, '0')}</span>
+          </p>
+        </div>
       </motion.div>
     </section>
   );

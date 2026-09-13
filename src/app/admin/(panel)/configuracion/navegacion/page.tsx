@@ -13,6 +13,7 @@ export default async function AdminNavegacionPage() {
       <AdminCrud
         table="navigation_items"
         rows={navigation}
+        entityLabel="elemento"
         emptyMessage="No hay elementos de navegación."
         columns={[
           { key: 'position', label: 'Orden' },

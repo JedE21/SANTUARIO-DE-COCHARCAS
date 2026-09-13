@@ -23,11 +23,11 @@ export const SectionHeading = ({
 
   return (
     <div className={`space-y-5 ${alignmentClass} ${className}`}>
-      {eyebrow && <span className="eyebrow text-carmesi">{eyebrow}</span>}
-      <h2 className="font-heading text-4xl font-semibold leading-[1.08] tracking-tight text-azul sm:text-5xl">{title}</h2>
+      {eyebrow && <span className="eyebrow text-tierra">{eyebrow}</span>}
+      <h2 className="display-section text-marron">{title}</h2>
       {withDivider && <GoldDivider align={textAlign === 'center' ? 'center' : 'left'} />}
       {description && (
-        <p className={`mx-auto max-w-2xl text-base leading-relaxed text-muted-foreground ${textAlign === 'center' ? 'mx-auto' : ''}`}>
+        <p className={`max-w-2xl text-base leading-relaxed text-muted-foreground ${textAlign === 'center' ? 'mx-auto' : ''}`}>
           {description}
         </p>
       )}

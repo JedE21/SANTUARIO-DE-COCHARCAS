@@ -13,25 +13,27 @@ export default async function AdminFestividadesPage() {
       <AdminCrud
         table="festivities"
         rows={festivities}
+        entityLabel="festividad"
         emptyMessage="No hay festividades registradas."
         columns={[
-          { key: 'name', label: 'Nombre' },
-          { key: 'slug', label: 'Slug' },
-          { key: 'status', label: 'Estado' },
+          { key: 'name', label: 'Festividad' },
           { key: 'start_date', label: 'Inicio', type: 'date' },
+          { key: 'status', label: 'Estado', type: 'status' },
+          { key: 'slug', label: 'Slug' },
         ]}
         fields={[
           { name: 'name', label: 'Nombre', required: true },
           { name: 'slug', label: 'Slug', required: true },
-          { name: 'description', label: 'Descripción', type: 'textarea' },
-          { name: 'program', label: 'Programa', type: 'textarea', rows: 6 },
-          { name: 'cover_image_url', label: 'Imagen (URL)', type: 'url' },
-          { name: 'start_date', label: 'Fecha de inicio', type: 'date' },
-          { name: 'end_date', label: 'Fecha de fin', type: 'date' },
+          { name: 'description', label: 'Descripción', type: 'textarea', group: 'content', fullWidth: true },
+          { name: 'program', label: 'Programa', type: 'textarea', rows: 6, group: 'content', fullWidth: true },
+          { name: 'cover_image_url', label: 'Imagen (URL)', type: 'url', group: 'content', fullWidth: true },
+          { name: 'start_date', label: 'Fecha de inicio', type: 'date', group: 'publication' },
+          { name: 'end_date', label: 'Fecha de fin', type: 'date', group: 'publication' },
           {
             name: 'status',
             label: 'Estado',
             type: 'select',
+            group: 'publication',
             options: [
               { value: 'draft', label: 'Borrador' },
               { value: 'published', label: 'Publicada' },

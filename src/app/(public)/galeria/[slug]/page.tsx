@@ -2,9 +2,10 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ImageIcon } from 'lucide-react';
-import { Container, Section, Badge, Card, EmptyState } from '@/components/public';
+import { Container, Section, EmptyState } from '@/components/public';
 import { GalleryGrid } from '@/components/gallery/GalleryGrid';
 import { JsonLd } from '@/components/shared/json-ld';
+import { FadeIn } from '@/components/motion';
 import { getGalleryAlbumBySlug, getGalleryItems, getGalleryAlbums } from '@/lib/queries';
 import { absoluteUrl, pageMetadata } from '@/lib/seo';
 
@@ -40,16 +41,22 @@ export default async function AlbumPage({ params }: Props) {
   return (
     <main>
       <JsonLd data={jsonLd} />
+
       <Section className="bg-marfil">
-        <Container className="py-16">
+        <Container>
           <div className="mx-auto max-w-3xl">
-            <Badge className="mb-4">Álbum</Badge>
-            <h1 className="text-4xl font-bold">{album.title}</h1>
-            <p className="mt-4 text-lg text-muted-foreground">{album.description}</p>
+            <FadeIn>
+              <p className="eyebrow text-tierra">Álbum</p>
+              <h1 className="display-section mt-5 text-marron">{album.title}</h1>
+              {album.description ? (
+                <p className="mt-6 text-lg leading-relaxed text-muted-foreground">{album.description}</p>
+              ) : null}
+            </FadeIn>
           </div>
         </Container>
       </Section>
-      <Section className="bg-background">
+
+      <Section className="bg-blanco">
         <Container>
           {items.length > 0 ? (
             <GalleryGrid
@@ -62,27 +69,37 @@ export default async function AlbumPage({ params }: Props) {
             />
           ) : (
             <EmptyState
-              className="py-16"
               icon={<ImageIcon className="h-6 w-6" />}
               title="Aún no hay imágenes en este álbum"
               description="Cuando se publiquen fotografías de esta colección aparecerán aquí."
             />
           )}
 
-          {all.length > 0 && (
-            <div className="mx-auto mt-16 max-w-5xl">
-              <h2 className="text-2xl font-semibold">Otros álbumes</h2>
-              <div className="mt-6 grid gap-6 md:grid-cols-3">
-                {all.filter((a) => a.id !== album.id).slice(0, 3).map((a) => (
-                  <Card key={a.id} className="p-6">
-                    <Link href={`/galeria/${a.slug}`}>
-                      <h3 className="text-lg font-semibold">{a.title}</h3>
-                    </Link>
-                  </Card>
-                ))}
-              </div>
+          {all.length > 1 ? (
+            <div className="mx-auto mt-20 max-w-4xl">
+              <p className="eyebrow text-tierra">Otros álbumes</p>
+              <ol className="mt-8 border-t border-tierra/20">
+                {all
+                  .filter((a) => a.id !== album.id)
+                  .slice(0, 3)
+                  .map((a) => (
+                    <li key={a.id} className="border-b border-tierra/20">
+                      <Link
+                        href={`/galeria/${a.slug}`}
+                        className="group flex items-center justify-between gap-6 py-6"
+                      >
+                        <span className="font-heading text-xl font-medium text-marron transition-colors duration-300 group-hover:text-dorado-oscuro sm:text-2xl">
+                          {a.title}
+                        </span>
+                        <span className="text-[0.62rem] font-semibold uppercase tracking-[0.22em] text-tierra">
+                          Ver álbum
+                        </span>
+                      </Link>
+                    </li>
+                  ))}
+              </ol>
             </div>
-          )}
+          ) : null}
         </Container>
       </Section>
     </main>

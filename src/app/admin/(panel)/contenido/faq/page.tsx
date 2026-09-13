@@ -13,6 +13,7 @@ export default async function AdminFaqPage() {
       <AdminCrud
         table="faqs"
         rows={faqs}
+        entityLabel="pregunta"
         emptyMessage="No hay preguntas frecuentes registradas."
         columns={[
           { key: 'question', label: 'Pregunta' },

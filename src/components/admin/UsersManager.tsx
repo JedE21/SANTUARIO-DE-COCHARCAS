@@ -53,7 +53,7 @@ export function UsersManager({ users, canManage }: { users: AdminUserRow[]; canM
   return (
     <div className="space-y-6">
       {!canManage && (
-        <div className="rounded-lg border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+        <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
           Solo el SUPER_ADMIN puede crear usuarios o cambiar roles. Puedes ver el listado.
         </div>
       )}
@@ -95,13 +95,15 @@ export function UsersManager({ users, canManage }: { users: AdminUserRow[]; canM
         </form>
       )}
 
-      <div className="overflow-x-auto rounded-lg border border-piedra/20 bg-blanco shadow-sm">
-        <table className="min-w-full divide-y divide-piedra/10 text-sm">
-          <thead className="bg-marfil">
+      <div className="overflow-x-auto rounded-lg border border-piedra/30 bg-blanco">
+        <table className="min-w-full divide-y divide-piedra/20 text-sm">
+          <thead className="bg-marfil/60">
             <tr>
-              <th className="px-4 py-3 text-left font-semibold text-carbone">Usuario</th>
-              <th className="px-4 py-3 text-left font-semibold text-carbone">Rol</th>
-              <th className="px-4 py-3 text-left font-semibold text-carbone">Estado</th>
+              {['Usuario', 'Rol', 'Estado'].map((label) => (
+                <th key={label} className="px-4 py-3 text-left text-[0.62rem] font-semibold uppercase tracking-[0.14em] text-tierra">
+                  {label}
+                </th>
+              ))}
             </tr>
           </thead>
           <tbody className="divide-y divide-piedra/10">

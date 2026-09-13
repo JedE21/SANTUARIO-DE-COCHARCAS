@@ -2,8 +2,10 @@ import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { Container, Section, Badge, Card } from '@/components/public';
+import { ArrowRight } from 'lucide-react';
+import { Container, Section } from '@/components/public';
 import { JsonLd } from '@/components/shared/json-ld';
+import { FadeIn } from '@/components/motion';
 import { getFestivityBySlug, getFestivitiesList } from '@/lib/queries';
 import { absoluteUrl, ogImagePath, pageMetadata } from '@/lib/seo';
 
@@ -22,11 +24,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 function formatDate(value?: string | null) {
   if (!value) return '';
-  return new Date(value + 'T00:00:00').toLocaleDateString('es-PE', { day: 'numeric', month: 'long', year: 'numeric' });
+  return new Date(value + 'T00:00:00').toLocaleDateString('es-PE', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  });
 }
 
 export default async function FestividadPage({ params }: Props) {
-  const [festivity, all] = await Promise.all([getFestivityBySlug(params.slug), getFestivitiesList()]);
+  const [festivity, all] = await Promise.all([
+    getFestivityBySlug(params.slug),
+    getFestivitiesList(),
+  ]);
   if (!festivity) notFound();
   const related = all.filter((f) => f.id !== festivity.id).slice(0, 3);
 
@@ -50,51 +59,86 @@ export default async function FestividadPage({ params }: Props) {
   return (
     <main>
       <JsonLd data={jsonLd} />
+
       <Section className="bg-marfil">
-        <Container className="py-16">
+        <Container>
           <div className="mx-auto max-w-3xl">
-            <Badge className="mb-4">Festividad</Badge>
-            <h1 className="text-4xl font-bold">{festivity.name}</h1>
-            <p className="mt-4 text-sm text-muted-foreground">
-              {festivity.start_date ? formatDate(festivity.start_date) : ''}{festivity.end_date ? ` — ${formatDate(festivity.end_date)}` : ''}
-            </p>
+            <FadeIn>
+              <p className="eyebrow text-tierra">
+                Festividad
+                {festivity.start_date ? ` · ${formatDate(festivity.start_date)}` : ''}
+                {festivity.end_date && festivity.end_date !== festivity.start_date
+                  ? ` — ${formatDate(festivity.end_date)}`
+                  : ''}
+              </p>
+              <h1 className="display-section mt-5 text-marron">{festivity.name}</h1>
+            </FadeIn>
+            {festivity.cover_image_url ? (
+              <FadeIn delay={0.1} className="mt-10">
+                <div className="relative aspect-[16/9] overflow-hidden bg-piedra/30">
+                  <Image
+                    src={festivity.cover_image_url}
+                    alt={festivity.name}
+                    fill
+                    priority
+                    sizes="(max-width: 768px) 100vw, 768px"
+                    className="object-cover"
+                  />
+                </div>
+              </FadeIn>
+            ) : null}
           </div>
         </Container>
       </Section>
-      <Section className="bg-background">
+
+      <Section className="bg-blanco">
         <Container>
-          <article className="mx-auto max-w-3xl overflow-hidden rounded-xl border border-border bg-card">
-            {festivity.cover_image_url && (
-              <div className="relative aspect-video w-full overflow-hidden">
-                <Image src={festivity.cover_image_url} alt={festivity.name} fill sizes="(max-width: 768px) 100vw, 768px" priority className="object-cover" />
-              </div>
-            )}
-            <div className="space-y-5 p-8">
-              {festivity.description && <p className="text-lg text-muted-foreground">{festivity.description}</p>}
-              {festivity.program && (
-                <div>
-                  <h2 className="text-xl font-semibold">Programa</h2>
-                  <p className="mt-2 whitespace-pre-line text-muted-foreground">{festivity.program}</p>
+          <article className="mx-auto max-w-3xl">
+            {festivity.description ? (
+              <p className="font-heading text-xl italic leading-relaxed text-marron sm:text-2xl">
+                {festivity.description}
+              </p>
+            ) : null}
+            {festivity.program ? (
+              <div className="mt-10">
+                <p className="eyebrow text-tierra">Programa</p>
+                <div className="mt-5 space-y-4 border-t border-tierra/20 pt-6 text-lg leading-relaxed text-muted-foreground">
+                  {festivity.program.split(/\n{2,}/).filter(Boolean).map((paragraph, i) => (
+                    <p key={i}>{paragraph}</p>
+                  ))}
                 </div>
-              )}
-            </div>
+              </div>
+            ) : null}
           </article>
 
-          {related.length > 0 && (
-            <div className="mx-auto mt-16 max-w-5xl">
-              <h2 className="text-2xl font-semibold">Otras festividades</h2>
-              <div className="mt-6 grid gap-6 md:grid-cols-3">
+          {related.length > 0 ? (
+            <div className="mx-auto mt-20 max-w-4xl">
+              <p className="eyebrow text-tierra">Otras festividades</p>
+              <ol className="mt-8 border-t border-tierra/20">
                 {related.map((f) => (
-                  <Card key={f.id} className="p-6">
-                    <Link href={`/festividades/${f.slug}`}>
-                      <p className="text-xs uppercase tracking-wide text-primary">{f.start_date ? formatDate(f.start_date) : 'Próximamente'}</p>
-                      <h3 className="mt-2 text-lg font-semibold">{f.name}</h3>
+                  <li key={f.id} className="border-b border-tierra/20">
+                    <Link
+                      href={`/festividades/${f.slug}`}
+                      className="group flex items-center justify-between gap-6 py-6"
+                    >
+                      <span>
+                        <span className="block text-[0.62rem] font-semibold uppercase tracking-[0.22em] text-tierra">
+                          {f.start_date ? formatDate(f.start_date) : 'Próximamente'}
+                        </span>
+                        <span className="mt-1.5 block font-heading text-xl font-medium text-marron transition-colors duration-300 group-hover:text-dorado-oscuro sm:text-2xl">
+                          {f.name}
+                        </span>
+                      </span>
+                      <ArrowRight
+                        className="h-4 w-4 shrink-0 text-tierra/60 transition-all duration-300 group-hover:translate-x-1.5 group-hover:text-dorado-oscuro"
+                        aria-hidden="true"
+                      />
                     </Link>
-                  </Card>
+                  </li>
                 ))}
-              </div>
+              </ol>
             </div>
-          )}
+          ) : null}
         </Container>
       </Section>
     </main>

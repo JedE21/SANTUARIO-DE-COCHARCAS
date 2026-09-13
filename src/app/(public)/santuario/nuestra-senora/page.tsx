@@ -1,7 +1,10 @@
 import * as React from 'react';
 import type { Metadata } from 'next';
-import { Breadcrumbs } from '@/components/shared/breadcrumbs';
-import { Section, Container, SectionHeading, Image, Link } from '@/components/public';
+import Image from 'next/image';
+import Link from 'next/link';
+import { ArrowRight } from 'lucide-react';
+import { PageHero } from '@/components/public/page-hero';
+import { Section, Container } from '@/components/public';
 import { FadeIn } from '@/components/motion';
 import { pageMetadata } from '@/lib/seo';
 
@@ -24,12 +27,12 @@ async function fetchVirginInfo(): Promise<VirginInfo> {
   return {
     title: 'Nuestra Señora de Cocharcas',
     description: 'La Virgen que protege y guía a su pueblo.',
-    history: 'La imagen de Nuestra Señora de Cocharcas es una réplica exacta de la Virgen de Copacabana, traída a estas tierras en el año 1598 por el conquistador Francisco Tito Yupanqui. Según la tradición, Yupanqui, un indígena devoto, decidió crear una réplica después de visitar el santuario de Copacabana en Bolivia y quedar profundamente impresionado por la imagen.',
+    history: 'La imagen de Nuestra Señora de Cocharcas es una réplica exacta de la Virgen de Copacabana, traída a estas tierras en el año 1598 por Francisco Tito Yupanqui. Según la tradición, Yupanqui, un indígena devoto, decidió crear una réplica después de visitar el santuario de Copacabana en Bolivia y quedar profundamente impresionado por la imagen.',
     significance: 'Esta imagen representa no solo una copia fiel de la Virgen de Copacabana, sino también un símbolo de la fe y la resistencia del pueblo andino. Su llegada marcó el comienzo de una profunda devoción mariana que ha perdurado por más de cuatro siglos.',
     devotion: 'La devoción a Nuestra Señora de Cocharcas se manifiesta en diversas formas: peregrinaciones anuales, novenas, procesiones, y ofrendas florales. Los fieles atribuyen numerosos milagros y gracias a su intercesión, especialmente en materia de salud, protección y provisión.',
-    festivities: 'La festividad principal se celebra en septiembre, coincidiendo con la fiesta de la Virgen de Copacabana. Durante esta época, el santuario recibe a miles de peregrinos que participan en misas, procesiones, danzas tradicionales y actos de fe.',
-    imageUrl: null,
-    imageAlt: 'Imagen de Nuestra Señora de Cocharcas'
+    festivities: 'La festividad principal se celebra en septiembre. Durante esta época, el santuario recibe a miles de peregrinos que participan en misas, procesiones, danzas tradicionales y actos de fe.',
+    imageUrl: '/images/santuario/virgen-cocharcas.jpg',
+    imageAlt: 'Imagen de Nuestra Señora de Cocharcas',
   };
 }
 
@@ -44,182 +47,122 @@ export default async function VirginPage() {
 
   return (
     <main>
-      <section className="pb-20">
+      <PageHero
+        eyebrow="Nuestra Señora"
+        title={virginInfo.title}
+        description={virginInfo.description}
+      />
+
+      {/* La imagen de la Virgen como protagonista */}
+      <Section className="bg-marfil">
         <Container>
-          {/* Breadcrumbs */}
-          <Breadcrumbs
-            items={[
-              { label: 'Inicio', href: '/' },
-              { label: 'El Santuario', href: '/santuario' },
-              { label: 'Nuestra Señora de Cocharcas', href: '/santuario/nuestra-senora', isActive: true }
-            ]}
-          />
-
-          {/* Page Header - solemne: azul profundo + dorado */}
-          <section className="relative overflow-hidden rounded-xl">
-            <div className="absolute inset-0">
-              {virginInfo.imageUrl ? (
+          <FadeIn>
+            <div className="relative">
+              <div
+                aria-hidden="true"
+                className="absolute -left-4 -top-4 hidden h-full w-full border border-tierra/25 lg:block"
+              />
+              <div className="relative aspect-[4/3] overflow-hidden bg-piedra/30 lg:aspect-[16/10]">
                 <Image
-                  src={virginInfo.imageUrl}
-                  alt="Virgen de Cocharcas"
+                  src={virginInfo.imageUrl || '/images/santuario/virgen-cocharcas.jpg'}
+                  alt={virginInfo.imageAlt}
                   fill
-                  sizes="100vw"
                   priority
-                  className="object-cover"
+                  sizes="(max-width: 1024px) 100vw, 90vw"
+                  className="img-zoom object-cover"
                 />
-              ) : (
-                <div className="h-full w-full bg-gradient-to-br from-azul-oscuro via-azul to-azul-oscuro" aria-hidden="true" />
-              )}
+              </div>
+              <p className="mt-4 text-[0.62rem] font-medium uppercase tracking-[0.24em] text-tierra">
+                Nuestra Señora de Cocharcas · Devoción mariana de los Andes
+              </p>
             </div>
+          </FadeIn>
+        </Container>
+      </Section>
 
-            {/* Overlay editorial azul + resplandor dorado sutil */}
-            <div className="absolute inset-0 bg-gradient-to-t from-azul-oscuro/90 via-azul/50 to-transparent" aria-hidden="true" />
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(201,162,39,0.12),transparent_60%)]" aria-hidden="true" />
-
-            <div className="relative z-10 flex min-h-[52vh] flex-col items-center justify-center px-4 text-center sm:px-6 lg:px-8">
-              <FadeIn delay={0} duration={0.5}>
-                <p className="mb-3 text-xs font-medium uppercase tracking-[0.25em] text-dorado-claro">
-                  Nuestra Señora de Cocharcas
-                </p>
-              </FadeIn>
-
-              <FadeIn delay={0.12} duration={0.6}>
-                <h1 className="font-heading text-4xl font-bold leading-tight text-blanco sm:text-5xl">
-                  {virginInfo.title}
-                </h1>
-              </FadeIn>
-
-              <FadeIn delay={0.24} duration={0.6}>
-                <div className="linea-dorada mx-auto mt-5 h-px w-24" aria-hidden="true" />
-                <p className="mx-auto mt-4 max-w-2xl text-xl text-marfil/90 sm:text-2xl">
-                  {virginInfo.description}
-                </p>
-              </FadeIn>
-            </div>
-          </section>
-
-          {/* Main content */}
-          <div className="space-y-12">
-            {/* History */}
-            <FadeIn delay={0} duration={0.5}>
-              <Section>
-                <Container>
-                  <SectionHeading
-                    title="Historia de la Devoción"
-                    description="Orígenes y tradición de la imagen sagrada"
-                  />
-                  <p className="text-muted-foreground">
-                    {virginInfo.history}
-                  </p>
-                </Container>
-              </Section>
+      {/* Historia + Significado: dos columnas editoriales */}
+      <Section className="bg-blanco">
+        <Container>
+          <div className="grid gap-14 lg:grid-cols-12 lg:gap-20">
+            <FadeIn className="lg:col-span-6">
+              <p className="eyebrow text-tierra">Historia de la devoción</p>
+              <h2 className="display-section mt-5 text-marron">Origen de la imagen</h2>
+              <p className="mt-7 leading-relaxed text-muted-foreground">{virginInfo.history}</p>
             </FadeIn>
-
-            {/* Significance */}
-            <FadeIn delay={0.2} duration={0.5}>
-              <Section className="bg-marfil">
-                <Container>
-                  <SectionHeading
-                    title="Significado Espiritual"
-                    description="¿Qué representa esta imagen para los fieles?"
-                  />
-                  <p className="text-muted-foreground">
-                    {virginInfo.significance}
-                  </p>
-                </Container>
-              </Section>
+            <FadeIn delay={0.1} className="lg:col-span-6">
+              <p className="eyebrow text-tierra">Significado espiritual</p>
+              <h2 className="display-section mt-5 text-marron">Fe del pueblo andino</h2>
+              <p className="mt-7 leading-relaxed text-muted-foreground">{virginInfo.significance}</p>
             </FadeIn>
+          </div>
+        </Container>
+      </Section>
 
-            {/* Devotion and Practices */}
-            <FadeIn delay={0.4} duration={0.5}>
-              <Section>
-                <Container>
-                  <SectionHeading
-                    title="Expresiones de Devoción"
-                    description="Cómo se manifiesta la fe hacia la Virgen"
-                  />
-                  <p className="text-muted-foreground">
-                    {virginInfo.devotion}
-                  </p>
-                </Container>
-              </Section>
+      {/* Devoción + Festividades */}
+      <Section className="bg-marfil">
+        <Container>
+          <div className="grid gap-14 lg:grid-cols-12 lg:gap-20">
+            <FadeIn className="lg:col-span-6">
+              <p className="eyebrow text-tierra">Expresiones de devoción</p>
+              <h2 className="display-section mt-5 text-marron">Cómo se vive la fe</h2>
+              <p className="mt-7 leading-relaxed text-muted-foreground">{virginInfo.devotion}</p>
             </FadeIn>
-
-            {/* Festivities */}
-            <FadeIn delay={0.6} duration={0.5}>
-              <Section className="bg-marfil">
-                <Container>
-                  <SectionHeading
-                    title="Festividades y Celebraciones"
-                    description="Los momentos de mayor congregación y fe"
-                  />
-                  <p className="text-muted-foreground">
-                    {virginInfo.festivities}
-                  </p>
-                  <div className="mt-8">
-                    <Link
-                      href="/festividades"
-                      className="inline-flex items-center rounded-md bg-azul px-5 py-2.5 text-sm font-medium text-blanco transition-normal hover:bg-azul-oscuro"
-                    >
-                      Ver festividades
-                      <span className="ml-2" aria-hidden="true">→</span>
-                    </Link>
-                  </div>
-                </Container>
-              </Section>
+            <FadeIn delay={0.1} className="lg:col-span-6">
+              <p className="eyebrow text-tierra">Festividades</p>
+              <h2 className="display-section mt-5 text-marron">El encuentro de septiembre</h2>
+              <p className="mt-7 leading-relaxed text-muted-foreground">{virginInfo.festivities}</p>
+              <Link
+                href="/festividades"
+                className="group mt-8 inline-flex items-center gap-3 text-[0.7rem] font-semibold uppercase tracking-[0.26em] text-marron transition-colors duration-300 hover:text-dorado-oscuro"
+              >
+                <span className="border-b border-marron/30 pb-1.5 transition-colors duration-300 group-hover:border-dorado">
+                  Ver festividades
+                </span>
+                <ArrowRight
+                  className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1"
+                  aria-hidden="true"
+                />
+              </Link>
             </FadeIn>
+          </div>
+        </Container>
+      </Section>
 
-            {/* Image Gallery */}
-            <FadeIn delay={0.8} duration={0.5}>
-              <Section>
-                <Container>
-                  <SectionHeading
-                    title="Galería de la Virgen"
-                    description="Imágenes que capturan la belleza y devoción"
+      {/* Cierre solemne */}
+      <section className="bg-marron text-marfil">
+        <Container>
+          <div className="section-xl max-w-3xl">
+            <FadeIn>
+              <p className="eyebrow text-dorado-claro">Ven a conocerla</p>
+              <h2 className="display-section mt-5 text-marfil">
+                La paz que muchos han encontrado ante su presencia
+              </h2>
+              <div className="mt-10 flex flex-wrap gap-10">
+                <Link
+                  href="/fe/solicitar-misa"
+                  className="group inline-flex items-center gap-3 text-[0.7rem] font-semibold uppercase tracking-[0.26em] text-dorado-claro transition-colors duration-300 hover:text-blanco"
+                >
+                  <span className="border-b border-dorado-claro/40 pb-1.5 transition-colors duration-300 group-hover:border-blanco/60">
+                    Solicitar una misa
+                  </span>
+                  <ArrowRight
+                    className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1"
+                    aria-hidden="true"
                   />
-                  <p className="text-muted-foreground">
-                    En esta sección se presentarán diversas fotografías de la Virgen de Cocharcas
-                    en diferentes momentos del año, vestimentas festivales y detalles de su
-                    ornamentación. Actualmente, la galería se encuentra en preparación.
-                  </p>
-                  <div className="text-center py-8">
-                    <p className="text-muted-foreground">Galería en preparación</p>
-                  </div>
-                </Container>
-              </Section>
-            </FadeIn>
-
-            {/* Call to Action */}
-            <FadeIn delay={1.0} duration={0.5}>
-              <Section className="relative overflow-hidden rounded-xl bg-azul-oscuro">
-                <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-dorado to-transparent" aria-hidden="true" />
-                <Container className="py-14 text-center">
-                  <h2 className="mb-4 font-heading text-3xl font-bold text-blanco">
-                    Ven a conocer su presencia
-                  </h2>
-                  <div className="linea-dorada mx-auto mb-6 h-px w-20" aria-hidden="true" />
-                  <p className="mx-auto mb-8 max-w-2xl text-xl text-marfil/85">
-                    Experimenta la paz y la bendición que muchos han encontrado
-                    ante la imagen de Nuestra Señora de Cocharcas.
-                  </p>
-                  <div className="flex flex-wrap justify-center gap-4">
-                    <Link
-                      href="/fe/solicitar-misa"
-                      className="inline-flex items-center rounded-md bg-dorado px-6 py-3 text-sm font-semibold text-azul-oscuro transition-all duration-300 hover:bg-dorado-claro"
-                    >
-                      Solicitar una misa
-                      <span className="ml-2" aria-hidden="true">→</span>
-                    </Link>
-                    <Link
-                      href="/contacto"
-                      className="inline-flex items-center rounded-md border border-marfil/40 px-6 py-3 text-sm font-medium text-blanco transition-all duration-300 hover:border-dorado/70 hover:bg-blanco/10"
-                    >
-                      Contactar al santuario
-                      <span className="ml-2" aria-hidden="true">→</span>
-                    </Link>
-                  </div>
-                </Container>
-              </Section>
+                </Link>
+                <Link
+                  href="/contacto"
+                  className="group inline-flex items-center gap-3 text-[0.7rem] font-semibold uppercase tracking-[0.26em] text-marfil/80 transition-colors duration-300 hover:text-blanco"
+                >
+                  <span className="border-b border-marfil/30 pb-1.5 transition-colors duration-300 group-hover:border-blanco/60">
+                    Contactar al santuario
+                  </span>
+                  <ArrowRight
+                    className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1"
+                    aria-hidden="true"
+                  />
+                </Link>
+              </div>
             </FadeIn>
           </div>
         </Container>

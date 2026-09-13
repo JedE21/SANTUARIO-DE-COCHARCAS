@@ -6,8 +6,10 @@ interface AdminPageHeaderProps {
 export function AdminPageHeader({ title, description }: AdminPageHeaderProps) {
   return (
     <div className="mb-6">
-      <h2 className="text-2xl font-semibold text-carbone">{title}</h2>
-      {description ? <p className="mt-1 text-sm text-carbone/60">{description}</p> : null}
+      <h1 className="text-xl font-semibold tracking-tight text-marron sm:text-2xl">{title}</h1>
+      {description ? (
+        <p className="mt-1.5 max-w-2xl text-sm leading-relaxed text-muted-foreground">{description}</p>
+      ) : null}
     </div>
   );
 }

@@ -20,6 +20,12 @@ import {
 } from '@/lib/security/guards';
 import { allowAction, RATE_LIMITS } from '@/lib/security/rate-limit';
 import {
+  isBlocked,
+  recordFailedAttempt,
+  clearAttempts,
+  composeAttemptKey,
+} from '@/lib/security/login-attempts';
+import {
   adminCreateUserSchema,
   contactMessageSchema,
   firstIssueMessage,
@@ -287,6 +293,7 @@ const CMS_TABLES = new Set([
   'sacraments',
   'sacrament_types',
   'media',
+  'slides',
 ]);
 
 /** TODAS las tablas administrables por el SUPER_ADMIN (sin restricciones). */
@@ -465,8 +472,40 @@ export async function createSlug(value: string): Promise<string> {
 }
 
 // ---------------------------------------------------------------------------
-// Biblioteca multimedia (PROMPT 14)
+// Slides por sección (carruseles administrables)
 // ---------------------------------------------------------------------------
+
+export async function uploadSlideImage(formData: FormData): Promise<ActionResult<{ url: string }>> {
+  const session = await requireAdminAction();
+  if (!session) return { ok: false, error: 'Sesión no válida. Vuelve a iniciar sesión.' };
+  if (!hasServiceRole() || !supabaseAdmin) return { ok: false, error: 'Configuración del servidor incompleta (service role).' };
+
+  const file = formData.get('file');
+  if (!(file instanceof File)) return { ok: false, error: 'Selecciona una imagen.' };
+  const ext = MEDIA_MIME_EXT[file.type];
+  if (!ext) return { ok: false, error: 'Formato no admitido. Usa JPG, PNG o WebP.' };
+  if (file.size <= 0 || file.size > MEDIA_MAX_BYTES) return { ok: false, error: 'La imagen debe pesar menos de 10 MB.' };
+
+  try {
+    const objectPath = `slides/${Date.now()}-${randomBytes(6).toString('hex')}.${ext}`;
+    const buffer = Buffer.from(await file.arrayBuffer());
+    const { error: uploadError } = await supabaseAdmin.storage
+      .from(MEDIA_BUCKET)
+      .upload(objectPath, buffer, { contentType: file.type, upsert: false });
+    if (uploadError) return { ok: false, error: 'No se pudo subir la imagen a Storage.' };
+
+    const { data: pub } = supabaseAdmin.storage.from(MEDIA_BUCKET).getPublicUrl(objectPath);
+    await auditLog('insert', 'media', null, { path: objectPath, size: file.size, for: 'slide' }, session);
+
+    return {
+      ok: true,
+      message: 'Imagen subida.',
+      data: { url: pub.publicUrl },
+    };
+  } catch {
+    return { ok: false, error: 'Error al subir la imagen.' };
+  }
+}
 
 const MEDIA_MAX_BYTES = 10 * 1024 * 1024; // 10 MB
 const MEDIA_MIME_EXT: Record<string, string> = {
@@ -679,12 +718,63 @@ export async function signIn(formData: FormData): Promise<ActionResult> {
   let userId: string;
   let role: string;
 
+  // ── Identidad del dispositivo que intenta ingresar ──
+  // Cookie httpOnly persistente (12 meses). El bloqueo por intentos queda
+  // limitado a ESTE dispositivo: un ataque desde otro equipo no bloquea a
+  // la cuenta a nivel global. La IP sigue cubierta por el rate-limit global.
+  const DEVICE_COOKIE = 'admin_device';
+  const cookiesJar = cookies();
+  let deviceId = cookiesJar.get(DEVICE_COOKIE)?.value ?? '';
+  if (!/^[0-9a-f-]{16,64}$/i.test(deviceId)) {
+    deviceId = randomBytes(18).toString('hex');
+    cookiesJar.set(DEVICE_COOKIE, deviceId, {
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: process.env.NODE_ENV === 'production',
+      path: '/',
+      maxAge: 60 * 60 * 24 * 365, // 12 meses
+    });
+  }
+  const attemptKey = composeAttemptKey(deviceId, email);
+
+  // Políticas de intentos POR DISPOSITIVO (requisito institucional):
+  //  - correo NO registrado → 3 intentos, luego bloqueo de este dispositivo.
+  //  - correo registrado + contraseña errada → 5 intentos, luego bloqueo.
+  // El estado se consulta ANTES de autenticar para bloquear temprano.
+  const gate = isBlocked(attemptKey);
+  if (gate.blocked) {
+    await auditLog('auth.login_blocked', 'auth', null, { email, device: deviceId });
+    return { ok: false, error: gate.blockMessage ?? 'Acceso bloqueado. Comunica con el administrador.' };
+  }
+
   try {
     const db = createClient();
     const { data, error } = await db.auth.signInWithPassword({ email, password });
     if (error || !data.user) {
       await auditLog('auth.login_failed', 'auth', null, { email });
-      return { ok: false, error: 'Credenciales incorrectas.' };
+
+      // Distinguir contraseña errada de cuenta inexistente SIN revelar
+      // información adicional al cliente: la UI muestra el mismo mensaje
+      // de credenciales incorrectas con el conteo de intentos restantes.
+      let kind: 'unauthorized' | 'wrong_password' = 'unauthorized';
+      if (hasServiceRole() && supabaseAdmin) {
+        // El panel es institucional (pocas cuentas): listar usuarios es
+        // suficiente para saber si el correo existe sin exponer detalles.
+        const { data: userData } = await supabaseAdmin.auth.admin.listUsers({ page: 1, perPage: 200 });
+        const known =
+          userData?.users?.some((u) => (u.email ?? '').toLowerCase() === email) ?? false;
+        kind = known ? 'wrong_password' : 'unauthorized';
+      }
+      const state = recordFailedAttempt(attemptKey, kind);
+      if (state.blocked) {
+        await auditLog('auth.login_blocked', 'auth', null, { email, reason: kind });
+        return { ok: false, error: state.blockMessage ?? 'Acceso bloqueado. Comunica con el administrador.' };
+      }
+      const remainingNote =
+        kind === 'unauthorized'
+          ? `Intentos restantes: ${state.remaining ?? 0} de 3.`
+          : `Intentos restantes: ${state.remaining ?? 0} de 5.`;
+      return { ok: false, error: `Credenciales incorrectas. ${remainingNote}` };
     }
     userId = data.user.id;
 
@@ -703,9 +793,24 @@ export async function signIn(formData: FormData): Promise<ActionResult> {
 
     if (!roleName) {
       await auditLog('auth.login_denied', 'auth', null, { email, reason: 'sin_rol_admin' });
-      return { ok: false, error: 'Esta cuenta no tiene permisos de administración.' };
+      // Cuenta válida pero sin permisos: se cuenta como acceso no autorizado
+      // (por dispositivo).
+      const deniedState = recordFailedAttempt(attemptKey, 'unauthorized');
+      if (deniedState.blocked) {
+        return {
+          ok: false,
+          error:
+            'Acceso bloqueado: se superó el número de intentos permitidos. ' +
+            'Comunica con el administrador del panel.',
+        };
+      }
+      return {
+        ok: false,
+        error: `Esta cuenta no tiene permisos de administración. Intentos restantes: ${deniedState.remaining ?? 0} de 3.`,
+      };
     }
     role = roleName;
+    clearAttempts(attemptKey);
 
     const token = await createSessionToken({ sub: userId, email, role });
     if (!token) {

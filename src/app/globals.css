@@ -13,19 +13,23 @@ html {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Custom colors - keeping existing ones for backward compatibility */
+/* Custom colors - identidad 2026: tierra / marrón / dorado
+   (los nombres legacy se conservan como alias para no romper componentes) */
 :root {
   --font-title: 'Cormorant Garamond', Georgia, serif;
   --font-body: 'Inter', 'Segoe UI', sans-serif;
-  --marfil: #F7F2E7;
+  --marfil: #F5F1E8;
   --blanco: #FFFFFF;
-  --dorado: #C9A227;
-  --piedra: #8C8173;
-  --azul: #17365D;
-  --azul-oscuro: #0F2540;
-  --carmesi: #8F2434;
-  --verde-andes: #34483B;
-  --carbone: #1A2436;
+  --dorado: #B08A45;
+  --piedra: #D8D0C1;
+  --tierra: #7A6250;
+  --marron: #3A3029;
+  --negro: #171615;
+  --azul: #3A3029;
+  --azul-oscuro: #262019;
+  --carmesi: #7A6250;
+  --verde-andes: #56504A;
+  --carbone: #171615;
 }
 
 /* Custom utilities - keeping existing ones for backward compatibility */
@@ -116,7 +120,7 @@ html {
 
 /* Sombra patrimonial suave (superficies elegantes, nunca duras) */
 .shadow-suave {
-  box-shadow: 0 12px 32px -12px rgba(23, 54, 93, 0.18), 0 4px 10px -6px rgba(23, 54, 93, 0.08);
+  box-shadow: 0 12px 32px -12px rgba(23, 22, 21, 0.14), 0 4px 10px -6px rgba(23, 22, 21, 0.06);
 }
 
 /* Linea dorada decorativa bajo titulos (patrimonio) */
@@ -126,7 +130,7 @@ html {
 
 /* Hairlines editoriales (finas, institucionales) */
 .hairline {
-  background: color-mix(in srgb, var(--piedra) 35%, transparent);
+  background: color-mix(in srgb, var(--tierra) 28%, transparent);
 }
 
 .hairline-dorada {
@@ -136,15 +140,41 @@ html {
 /* Tipografia display (titulos protagonistas estilo editorial) */
 .display-xxl {
   font-family: var(--font-title);
-  font-weight: 600;
-  letter-spacing: -0.015em;
-  line-height: 1.04;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.02;
+}
+
+/* Titular hero: escala cinematografica pero contenida */
+.display-hero {
+  font-family: var(--font-title);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.0;
+  font-size: clamp(2.75rem, 8vw, 6.5rem);
+}
+
+/* Titular de seccion editorial */
+.display-section {
+  font-family: var(--font-title);
+  font-weight: 500;
+  letter-spacing: -0.018em;
+  line-height: 1.06;
+  font-size: clamp(2rem, 4.2vw, 3.75rem);
 }
 
 .eyebrow {
   font-size: 0.72rem;
   font-weight: 600;
   letter-spacing: 0.32em;
+  text-transform: uppercase;
+}
+
+/* Enlace editorial en mayusculas (navegacion, CTAs discretos) */
+.link-caps {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
 }
 
@@ -228,16 +258,29 @@ h6 {
   }
 }
 
-/* Section spacing (editorial: mas aire) */
+/* Section spacing (editorial: mucho aire) */
 .section {
-  padding-top: 5rem;
-  padding-bottom: 5rem;
+  padding-top: 5.5rem;
+  padding-bottom: 5.5rem;
 }
 
 @media (min-width: 768px) {
   .section {
-    padding-top: 7rem;
-    padding-bottom: 7rem;
+    padding-top: 8rem;
+    padding-bottom: 8rem;
+  }
+}
+
+/* Seccion de respiro maximo (cierres, citas) */
+.section-xl {
+  padding-top: 6.5rem;
+  padding-bottom: 6.5rem;
+}
+
+@media (min-width: 768px) {
+  .section-xl {
+    padding-top: 10.5rem;
+    padding-bottom: 10.5rem;
   }
 }
 
@@ -258,6 +301,65 @@ h6 {
   transition-property: color, background-color, border-color, text-decoration-color, fill, stroke, opacity, box-shadow, transform, filter, backdrop-filter;
   transition-duration: 350ms;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Transicion editorial (movimiento lento, solemne) */
+.transition-editorial {
+  transition-property: color, background-color, border-color, opacity, transform, filter;
+  transition-duration: 500ms;
+  transition-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Imagen editorial: zoom hover muy sutil */
+.img-zoom {
+  transition: transform 1400ms cubic-bezier(0.16, 1, 0.3, 1), filter 500ms ease;
+}
+
+.group:hover .img-zoom {
+  transform: scale(1.035);
+}
+
+/* Ken Burns cinematográfico (hero): acercamiento apenas perceptible */
+@keyframes hero-kenburns {
+  from {
+    transform: scale(1.055);
+  }
+  to {
+    transform: scale(1);
+  }
+}
+
+.hero-kenburns {
+  animation: hero-kenburns 8.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-kenburns {
+    animation: none;
+  }
+}
+
+/* Aparición progresiva del texto en cada slide (SectionSlider) */
+@keyframes slide-text-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-up-on-slide {
+  animation: slide-text-in 1.1s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fade-up-on-slide {
+    animation: none;
+  }
 }
 
 /* Accesibilidad: indicador de foco global visible (WCAG 2.4.7) */
