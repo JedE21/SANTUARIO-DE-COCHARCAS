@@ -80,7 +80,7 @@ interface SlideFormProps {
 }
 
 function SlideForm({ section, initial, busy, onSave, onCancel }: SlideFormProps) {
-  const [mode, setMode] = React.useState<'url' | 'upload'>(initial?.image_url && !initial.image_url.startsWith('/') && !initial.image_url.includes(window.location.origin) ? 'url' : 'url');
+  const [mode, setMode] = React.useState<'url' | 'upload'>('url');
   const [url, setUrl] = React.useState(initial?.image_url ?? '');
   const [uploading, setUploading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);

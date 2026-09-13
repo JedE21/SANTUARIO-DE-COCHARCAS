@@ -331,8 +331,13 @@ function sanitizeAdminPayload(raw: Record<string, unknown>, role: string): Recor
     if (!/^[a-z][a-z0-9_]*$/i.test(key)) continue;
     // Restricciones de columnas aplican solo a roles no SUPER_ADMIN.
     if (!isSuper && BLOCKED_COLUMNS.has(key)) continue;
-    if (typeof value === 'string') clean[key] = value.slice(0, 10000);
-    else if (typeof value === 'number' || typeof value === 'boolean') clean[key] = value;
+    if (value === null || value === undefined) {
+      clean[key] = null;
+    } else if (typeof value === 'string') {
+      clean[key] = value.slice(0, 10000);
+    } else if (typeof value === 'number' || typeof value === 'boolean') {
+      clean[key] = value;
+    }
   }
   return clean;
 }
