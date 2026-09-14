@@ -27,6 +27,8 @@ import {
   getSlidesBySection,
 } from '@/lib/queries';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   alternates: { canonical: '/' },
   openGraph: {

@@ -8,6 +8,8 @@ import { MassSchedule } from '@/components/shared/mass-schedule';
 import { getMassSchedules, getSiteSettings, getSlidesBySection } from '@/lib/queries';
 import { pageMetadata } from '@/lib/seo';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = pageMetadata({
   title: 'Planifica tu visita',
   description:

@@ -8,6 +8,8 @@ import { FadeIn, Reveal } from '@/components/motion';
 import { getEventsList, getSlidesBySection } from '@/lib/queries';
 import { pageMetadata } from '@/lib/seo';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = pageMetadata({
   title: 'Eventos',
   description: 'Próximos eventos y celebraciones del Santuario de Cocharcas.',

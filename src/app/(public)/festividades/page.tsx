@@ -9,6 +9,8 @@ import { FadeIn, Reveal } from '@/components/motion';
 import { getFestivitiesList, getSlidesBySection } from '@/lib/queries';
 import { pageMetadata } from '@/lib/seo';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = pageMetadata({
   title: 'Festividades',
   description: 'Festividades y celebraciones del Santuario de Cocharcas.',

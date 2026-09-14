@@ -10,6 +10,8 @@ import { GalleryGrid } from '@/components/gallery/GalleryGrid';
 import { getGalleryAlbums, getGalleryItems, getGalleryCategories, getSlidesBySection } from '@/lib/queries';
 import { pageMetadata } from '@/lib/seo';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = pageMetadata({
   title: 'Galería fotográfica',
   description: 'Fotografías del santuario, festividades y vida comunitaria.',

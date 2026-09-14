@@ -7,6 +7,8 @@ import { ContactForm } from '@/components/forms/ContactForm';
 import { getSiteSettings, getFaqs, getSlidesBySection } from '@/lib/queries';
 import { pageMetadata } from '@/lib/seo';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = pageMetadata({
   title: 'Contacto',
   description: 'Contacta con el Santuario de Nuestra Señora de Cocharcas: dirección, teléfono, correo y preguntas frecuentes.',

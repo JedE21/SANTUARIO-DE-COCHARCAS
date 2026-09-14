@@ -10,6 +10,8 @@ import { FadeIn, Reveal } from '@/components/motion';
 import { pageMetadata } from '@/lib/seo';
 import { getSlidesBySection } from '@/lib/queries';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = pageMetadata({
   title: 'El Santuario',
   description: 'Descubre la historia, arquitectura y patrimonio del Santuario de Nuestra Señora de Cocharcas.',

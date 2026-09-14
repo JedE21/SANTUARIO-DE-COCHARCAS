@@ -9,6 +9,8 @@ import { FadeIn, Reveal } from '@/components/motion';
 import { getNewsList, getNewsCategories, getSlidesBySection } from '@/lib/queries';
 import { pageMetadata } from '@/lib/seo';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = pageMetadata({
   title: 'Noticias',
   description: 'Noticias y novedades de la comunidad del Santuario de Cocharcas.',

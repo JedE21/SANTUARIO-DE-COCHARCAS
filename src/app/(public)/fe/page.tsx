@@ -8,6 +8,8 @@ import { FadeIn, Reveal } from '@/components/motion';
 import { pageMetadata } from '@/lib/seo';
 import { getSlidesBySection } from '@/lib/queries';
 
+export const dynamic = 'force-dynamic';
+
 const feSections = [
   {
     icon: Church,

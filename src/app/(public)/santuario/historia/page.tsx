@@ -9,6 +9,8 @@ import { FadeIn, Reveal } from '@/components/motion';
 import { pageMetadata } from '@/lib/seo';
 import { getHistoriaContent, getHistoriaTimeline, getSlidesBySection } from '@/lib/queries';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = pageMetadata({
   title: 'Historia',
   description: 'Historia de la Virgen de Cocharcas y del Santuario: de la llegada de la imagen en 1598 al santuario de piedra de hoy.',
