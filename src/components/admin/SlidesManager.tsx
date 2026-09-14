@@ -15,6 +15,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ConfirmDialog } from '@/components/admin/ConfirmDialog';
+import { ImageCropModal } from '@/components/admin/ImageCropModal';
 import { AdminPageHeader } from '@/components/admin/AdminPageHeader';
 import {
   adminDeleteRow,
@@ -85,6 +86,7 @@ function SlideForm({ section, initial, busy, onSave, onCancel }: SlideFormProps)
   const [uploading, setUploading] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
   const fileRef = React.useRef<HTMLInputElement>(null);
+  const [cropModal, setCropModal] = React.useState<{ open: boolean; imageSrc: string }>({ open: false, imageSrc: '' });
 
   // Previsualización en vivo: URL escrita o archivo local (ObjectURL)
   const [localPreview, setLocalPreview] = React.useState<string | null>(null);
@@ -199,8 +201,11 @@ function SlideForm({ section, initial, busy, onSave, onCancel }: SlideFormProps)
                 disabled={uploading}
                 onChange={(e) => {
                   const f = e.target.files?.[0] ?? null;
-                  onPickFile(f);
-                  if (f) void onUploadFile(f);
+                  if (f) {
+                    const objectUrl = URL.createObjectURL(f);
+                    setCropModal({ open: true, imageSrc: objectUrl });
+                  }
+                  e.target.value = '';
                 }}
                 className="block w-full text-sm text-carbone/70 file:mr-3 file:rounded-md file:border-0 file:bg-carbone file:px-3 file:py-2 file:text-sm file:text-blanco hover:file:bg-carbone/90"
               />
@@ -286,6 +291,33 @@ function SlideForm({ section, initial, busy, onSave, onCancel }: SlideFormProps)
           <span className="text-xs text-muted-foreground">La imagen se subirá al guardar…</span>
         ) : null}
       </div>
+
+      {/* Modal de crop */}
+      <ImageCropModal
+        open={cropModal.open}
+        imageSrc={cropModal.imageSrc}
+        onCropComplete={async (blob) => {
+          URL.revokeObjectURL(cropModal.imageSrc);
+          setUploading(true);
+          setError(null);
+          const fd = new FormData();
+          fd.append('file', new File([blob], 'slide-recortada.jpg', { type: blob.type }));
+          const res = await uploadSlideImage(fd);
+          if (!res.ok || !res.data?.url) {
+            setError(res.error ?? 'No se pudo subir la imagen.');
+          } else {
+            setUrl(res.data.url);
+            setMode('url');
+            onPickFile(null);
+          }
+          setUploading(false);
+          setCropModal({ open: false, imageSrc: '' });
+        }}
+        onCancel={() => {
+          URL.revokeObjectURL(cropModal.imageSrc);
+          setCropModal({ open: false, imageSrc: '' });
+        }}
+      />
     </form>
   );
 }

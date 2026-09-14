@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ConfirmDialog } from '@/components/admin/ConfirmDialog';
+import { ImageCropModal } from '@/components/admin/ImageCropModal';
 import { uploadMediaAsset, deleteMediaAsset, type ActionResult } from '@/lib/actions';
 import type { MediaRow } from '@/lib/queries-admin';
 
@@ -22,18 +23,30 @@ export function MediaLibrary({ items }: { items: MediaRow[] }) {
   const [deleting, setDeleting] = React.useState<string | null>(null);
   const [confirming, setConfirming] = React.useState<MediaRow | null>(null);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
+  const formRef = React.useRef<HTMLFormElement>(null);
+  const [cropModal, setCropModal] = React.useState<{ open: boolean; imageSrc: string }>({ open: false, imageSrc: '' });
+  const [croppedBlob, setCroppedBlob] = React.useState<Blob | null>(null);
 
   async function onUpload(ev: React.FormEvent<HTMLFormElement>) {
     ev.preventDefault();
     const form = ev.currentTarget;
+    const fd = new FormData(form);
+
+    // Si hay un blob recortado, reemplazar el archivo en el FormData
+    if (croppedBlob) {
+      const file = new File([croppedBlob], 'imagen-recortada.jpg', { type: croppedBlob.type });
+      fd.set('file', file);
+    }
+
     setUploading(true);
     setResult(null);
-    const res = await uploadMediaAsset(new FormData(form));
+    const res = await uploadMediaAsset(fd);
     setResult(res);
     setUploading(false);
     if (res.ok) {
       form.reset();
       if (fileInputRef.current) fileInputRef.current.value = '';
+      setCroppedBlob(null);
       window.location.reload();
     }
   }
@@ -57,7 +70,7 @@ export function MediaLibrary({ items }: { items: MediaRow[] }) {
 
   return (
     <div className="space-y-6">
-      <form onSubmit={onUpload} className="space-y-4 rounded-lg border border-piedra/20 bg-blanco p-6 shadow-sm">
+      <form ref={formRef} onSubmit={onUpload} className="space-y-4 rounded-lg border border-piedra/20 bg-blanco p-6 shadow-sm">
         <div className="grid gap-4 md:grid-cols-3">
           <label className="block space-y-1 md:col-span-1">
             <span className="text-sm font-medium text-carbone">Imagen (JPG/PNG/WebP, máx. 10 MB)</span>
@@ -67,8 +80,18 @@ export function MediaLibrary({ items }: { items: MediaRow[] }) {
               type="file"
               accept="image/jpeg,image/png,image/webp"
               required
+              onChange={(e) => {
+                const f = e.target.files?.[0];
+                if (f) {
+                  const objectUrl = URL.createObjectURL(f);
+                  setCropModal({ open: true, imageSrc: objectUrl });
+                }
+              }}
               className="block w-full text-sm text-carbone/70 file:mr-3 file:rounded-md file:border-0 file:bg-carbone file:px-3 file:py-2 file:text-sm file:text-blanco hover:file:bg-carbone/90"
             />
+            {croppedBlob && (
+              <span className="text-xs text-green-700">Imagen recortada lista para subir.</span>
+            )}
           </label>
           <label className="block space-y-1">
             <span className="text-sm font-medium text-carbone">Nombre</span>
@@ -136,6 +159,21 @@ export function MediaLibrary({ items }: { items: MediaRow[] }) {
         busy={deleting !== null}
         onConfirm={performDelete}
         onCancel={() => setConfirming(null)}
+      />
+
+      {/* Modal de crop */}
+      <ImageCropModal
+        open={cropModal.open}
+        imageSrc={cropModal.imageSrc}
+        onCropComplete={(blob) => {
+          URL.revokeObjectURL(cropModal.imageSrc);
+          setCroppedBlob(blob);
+          setCropModal({ open: false, imageSrc: '' });
+        }}
+        onCancel={() => {
+          URL.revokeObjectURL(cropModal.imageSrc);
+          setCropModal({ open: false, imageSrc: '' });
+        }}
       />
     </div>
   );
