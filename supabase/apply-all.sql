@@ -371,6 +371,13 @@ exception
   when duplicate_object then null;
 end $$;
 
+-- ---------------------------------------------------------------------------
+-- CONVERTIR slide_section DE ENUM A TEXT (migración 017)
+-- Elimina el problema de secciones faltantes permanentemente.
+-- ---------------------------------------------------------------------------
+alter table public.slides
+  alter column section type text using section::text;
+
 -- ============================================================================
 -- FIN. El panel de administración ya puede guardar todos los cambios.
 -- ============================================================================

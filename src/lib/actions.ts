@@ -374,7 +374,7 @@ export async function adminUpsertRow(table: string, payload: Record<string, unkn
         .update(clean as never)
         .eq('id', id)
         .select('id');
-      if (error) return { ok: false, error: 'No se pudo guardar el registro.' };
+      if (error) return { ok: false, error: `Error al actualizar: ${error.message}${error.details ? ` (${error.details})` : ''}` };
       if (!updated || (updated as unknown[]).length === 0) {
         return { ok: false, error: 'El registro no existe en la base de datos. Ejecuta las migraciones del CMS en Supabase.' };
       }
@@ -384,7 +384,13 @@ export async function adminUpsertRow(table: string, payload: Record<string, unkn
         .from(table as never)
         .insert([clean] as never)
         .select('id');
-      if (error) return { ok: false, error: `Error al crear: ${error.message} (detail: ${error.details ?? 'ninguno'})` };
+      if (error) {
+        const msg = error.message ?? '';
+        if (msg.includes('invalid input value for') || msg.includes('enum') || msg.includes('slide_section')) {
+          return { ok: false, error: 'Error de base de datos: la columna "section" tiene un tipo enum restrictivo. Ejecuta la migración 017 en Supabase SQL Editor para convertirla a texto.' };
+        }
+        return { ok: false, error: `Error al crear: ${msg}${error.details ? ` (${error.details})` : ''}` };
+      }
       const newId = (inserted as unknown as { id: string }[])?.[0]?.id;
       await auditLog('insert', table, newId ?? null, { fields: Object.keys(clean), fromSeed: isSeedId }, session);
       return { ok: true, message: 'Guardado correctamente.', data: { id: newId } };
