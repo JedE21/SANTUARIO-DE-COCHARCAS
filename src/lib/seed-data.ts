@@ -16,6 +16,8 @@ import type {
   Sacrament,
   SacramentType,
   HomeSection,
+  HistoriaContent,
+  HistoriaTimeline,
   Slide,
 } from '@/types/database';
 
@@ -39,13 +41,14 @@ export const fallbackSiteSettings: SiteSettings = {
 export const fallbackNavigation: NavigationItem[] = [
   { id: 'seed-nav-1', label: 'Inicio', href: '/', position: 1, visible: true },
   { id: 'seed-nav-2', label: 'El Santuario', href: '/santuario', position: 2, visible: true },
-  { id: 'seed-nav-3', label: 'Fe', href: '/fe', position: 3, visible: true },
-  { id: 'seed-nav-4', label: 'Festividades', href: '/festividades', position: 4, visible: true },
-  { id: 'seed-nav-5', label: 'Noticias', href: '/noticias', position: 5, visible: true },
-  { id: 'seed-nav-6', label: 'Eventos', href: '/eventos', position: 6, visible: true },
-  { id: 'seed-nav-7', label: 'Galería', href: '/galeria', position: 7, visible: true },
-  { id: 'seed-nav-8', label: 'Visita', href: '/visita', position: 8, visible: true },
-  { id: 'seed-nav-9', label: 'Contacto', href: '/contacto', position: 9, visible: true },
+  { id: 'seed-nav-25', label: 'Historia', href: '/santuario/historia', position: 3, visible: true },
+  { id: 'seed-nav-3', label: 'Fe', href: '/fe', position: 4, visible: true },
+  { id: 'seed-nav-4', label: 'Festividades', href: '/festividades', position: 5, visible: true },
+  { id: 'seed-nav-5', label: 'Noticias', href: '/noticias', position: 6, visible: true },
+  { id: 'seed-nav-6', label: 'Eventos', href: '/eventos', position: 7, visible: true },
+  { id: 'seed-nav-7', label: 'Galería', href: '/galeria', position: 8, visible: true },
+  { id: 'seed-nav-8', label: 'Visita', href: '/visita', position: 9, visible: true },
+  { id: 'seed-nav-9', label: 'Contacto', href: '/contacto', position: 10, visible: true },
 ];
 
 export const fallbackFooterSettings: FooterSettings = {
@@ -55,6 +58,9 @@ export const fallbackFooterSettings: FooterSettings = {
   newsletter_text: 'Recibe noticias y avisos de la comunidad.',
   copyright_text: '© 2026 Santuario de Nuestra Señora de Cocharcas · Todos los derechos reservados',
   developer_text: 'Ing. de Sistemas José J. Echegaray Díaz',
+  signature_text: 'Cocharquino de corazón.',
+  photos_credit_text: 'Fotografías: Wikimedia Commons, licencias Creative Commons BY-SA.',
+  show_contact_data: true,
 };
 
 export const fallbackPages: Page[] = [
@@ -212,6 +218,77 @@ export const fallbackSacraments: Sacrament[] = [
   { id: 'seed-sac-2', name: 'Confirmación', slug: 'confirmacion', description: 'Acompañamiento catequético para la Confirmación.', requirements: 'Catequesis previa y coordinación pastoral.', image_url: '/images/cocharcas-sacrament.svg', active: true, position: 2 },
   { id: 'seed-sac-3', name: 'Matrimonio', slug: 'matrimonio', description: 'Orientación para la celebración del Matrimonio.', requirements: 'Partidas de bautismo y entrevista pastoral.', image_url: '/images/cocharcas-sacrament.svg', active: true, position: 3 },
   { id: 'seed-sac-4', name: 'Primera Comunión', slug: 'primera-comunion', description: 'Preparación para la Primera Comunión.', requirements: 'Catequesis previa y partida de bautismo.', image_url: '/images/cocharcas-sacrament.svg', active: true, position: 4 },
+];
+
+/** Contenido editable de la página Historia (historia de la Virgen de Cocharcas). */
+export const fallbackHistoriaContent: HistoriaContent = {
+  id: 'seed-historia-content',
+  hero_title: 'Cuatro siglos de devoción',
+  hero_description:
+    'Un legado que perdura a través de los siglos, desde la llegada de la imagen hasta el santuario de piedra de hoy.',
+  origins_title: 'Una imagen que llegó a pie',
+  origins_text:
+    'La historia de Nuestra Señora de Cocharcas se remonta a finales del siglo XVI, cuando el indígena Francisco Tito Yupanqui, inspirado por la devoción a la Virgen de Copacabana, decidió crear una réplica de la imagen sagrada. Tras un arduo viaje de más de 800 kilómetros a pie desde Potosí, logró traer la imagen a estas tierras, donde fue recibida con gran alegría y devoción por la población local.',
+  origins_quote:
+    'Este acto de fe marcó el comienzo de lo que hoy es uno de los centros religiosos más importantes de los Andes peruanos.',
+  origins_image_url: '/images/santuario/virgen-cocharcas.jpg',
+  origins_image_alt: 'Imagen de Nuestra Señora de Cocharcas traída por Francisco Tito Yupanqui',
+  periods_title: 'Etapas del santuario',
+  periods_description:
+    'De la primera capilla de adobe al templo de piedra que hoy recibe a los peregrinos.',
+  archive_title: 'La memoria escrita',
+  archive_text:
+    'El santuario posee un valioso archivo histórico que incluye documentos del siglo XVII, como libros de bautismos, matrimonios y defunciones, así como correspondencia eclesiástica y registros administrativos que permiten reconstruir la vida de la comunidad a lo largo de los siglos.\n\nActualmente, el archivo se encuentra en proceso de organización y digitalización para su conservación y puesta a disposición de investigadores y del público interesado.',
+  archive_image_url: '/images/santuario/pintura-detalle.jpg',
+  archive_image_alt: 'Documentos y arte colonial del archivo histórico del santuario',
+  status: 'published',
+};
+
+/** Hitos históricos de la línea de tiempo (editables desde el panel). */
+export const fallbackHistoriaTimeline: HistoriaTimeline[] = [
+  {
+    id: 'seed-hist-tl-1',
+    year: '1598',
+    title: 'Llegada de la imagen de la Virgen de Cocharcas',
+    description:
+      'Según la tradición, el indígena Francisco Tito Yupanqui trajo una réplica de la Virgen de Copacabana a estas tierras después de un arduo viaje a pie desde Potosí.',
+    image_url: '/images/santuario/virgen-cocharcas.jpg',
+    image_alt: 'Imagen de la Virgen de Cocharcas',
+    position: 1,
+    is_active: true,
+  },
+  {
+    id: 'seed-hist-tl-2',
+    year: '1600',
+    title: 'Construcción de la primera capilla',
+    description:
+      'Los fieles construyeron una primera capilla de adobe y paja para venerar la imagen traída.',
+    image_url: null,
+    image_alt: null,
+    position: 2,
+    is_active: true,
+  },
+  {
+    id: 'seed-hist-tl-3',
+    year: '1650',
+    title: 'Edificación de la iglesia actual',
+    description:
+      'Se comenzó la construcción de la iglesia de piedra que actualmente se conserva.',
+    image_url: '/images/santuario/santuario-exterior.jpg',
+    image_alt: 'Fachada del santuario de piedra',
+    position: 3,
+    is_active: true,
+  },
+  {
+    id: 'seed-hist-tl-4',
+    year: '1700',
+    title: 'Primeros documentos parroquiales',
+    description: 'Se iniciaron los registros de bautismos, matrimonios y defunciones.',
+    image_url: null,
+    image_alt: null,
+    position: 4,
+    is_active: true,
+  },
 ];
 
 /** Slides de demostración (imágenes locales reales del santuario). */

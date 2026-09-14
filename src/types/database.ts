@@ -42,6 +42,7 @@ export type SiteSettings = {
   twitter_url?: string | null;
   instagram_url?: string | null;
   youtube_url?: string | null;
+  tiktok_url?: string | null;
   footer_text?: string | null;
   created_at?: string | null;
   updated_at?: string | null;
@@ -64,6 +65,9 @@ export type FooterSettings = {
   newsletter_text?: string | null;
   copyright_text?: string | null;
   developer_text?: string | null;
+  signature_text?: string | null;
+  photos_credit_text?: string | null;
+  show_contact_data?: boolean | null;
   created_at?: string | null;
   updated_at?: string | null;
 };
@@ -295,6 +299,46 @@ export type SacramentRequest = {
   updated_at?: string | null;
 };
 
+export type HistoriaContent = {
+  id: string;
+  /** Hero / carrusel de la sección (afecta al PageHero cuando no hay slides). */
+  hero_title?: string | null;
+  hero_description?: string | null;
+  /** Orígenes: la historia de la llegada de la imagen (Virgen de Cocharcas). */
+  origins_title?: string | null;
+  origins_text?: string | null;
+  origins_quote?: string | null;
+  origins_image_url?: string | null;
+  origins_image_alt?: string | null;
+  /** Periodos históricos: intro de la sección. */
+  periods_title?: string | null;
+  periods_description?: string | null;
+  /** Archivo histórico / memoria escrita. */
+  archive_title?: string | null;
+  archive_text?: string | null;
+  archive_image_url?: string | null;
+  archive_image_alt?: string | null;
+  /** Publicación. */
+  status?: Status | null;
+  seo_title?: string | null;
+  seo_description?: string | null;
+  created_at?: string | null;
+  updated_at?: string | null;
+};
+
+export type HistoriaTimeline = {
+  id: string;
+  year: string;
+  title: string;
+  description?: string | null;
+  image_url?: string | null;
+  image_alt?: string | null;
+  position?: number | null;
+  is_active?: boolean | null;
+  created_at?: string | null;
+  updated_at?: string | null;
+};
+
 export type Slide = {
   id: string;
   section: string;
@@ -364,6 +408,8 @@ export type Tables = {
   sacrament_requests: SacramentRequest;
   media: Media;
   slides: Slide;
+  historia_content: HistoriaContent;
+  historia_timeline: HistoriaTimeline;
   audit_logs: AuditLog;
   newsletter_subscribers: NewsletterSubscriber;
 };

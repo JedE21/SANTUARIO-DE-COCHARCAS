@@ -1,14 +1,15 @@
 'use client';
 
 import * as React from 'react';
+import Image from 'next/image';
 import { Reveal } from '@/components/motion';
 
 interface TimelineItem {
   year: string | number;
   title: string;
   description: string;
-  image?: string;
-  imageAlt?: string;
+  image?: string | null;
+  imageAlt?: string | null;
 }
 
 interface HistoricalTimelineProps {
@@ -40,6 +41,18 @@ export const HistoricalTimeline = ({ items, className = '' }: HistoricalTimeline
                 <p className="eyebrow text-dorado-oscuro">{item.year}</p>
                 <h3 className="mt-2 font-heading text-2xl font-medium text-marron">{item.title}</h3>
                 <p className="mt-2 max-w-2xl leading-relaxed text-muted-foreground">{item.description}</p>
+                {item.image ? (
+                  <div className="relative mt-5 aspect-[16/9] max-w-xl overflow-hidden rounded-sm bg-piedra/20 sm:aspect-[2/1]">
+                    <Image
+                      src={item.image}
+                      alt={item.imageAlt || `Imagen del hito histórico: ${item.title}`}
+                      fill
+                      sizes="(max-width: 640px) 100vw, 40vw"
+                      className="img-zoom object-cover"
+                      unoptimized={!item.image.startsWith('/')}
+                    />
+                  </div>
+                ) : null}
               </article>
             </Reveal>
           </li>

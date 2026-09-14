@@ -17,6 +17,7 @@ export default async function AdminGaleriaPage() {
           entityLabel="álbum"
           emptyMessage="No hay álbumes creados."
           columns={[
+            { key: 'cover_image_url', label: 'Portada', type: 'image' },
             { key: 'title', label: 'Álbum' },
             { key: 'slug', label: 'Slug' },
             { key: 'position', label: 'Orden' },
@@ -26,7 +27,7 @@ export default async function AdminGaleriaPage() {
             { name: 'title', label: 'Nombre del álbum', required: true },
             { name: 'slug', label: 'Slug', required: true },
             { name: 'description', label: 'Descripción', type: 'textarea' },
-            { name: 'cover_image_url', label: 'Imagen de portada (URL)', type: 'url' },
+            { name: 'cover_image_url', label: 'Imagen de portada', type: 'file', uploadGallery: true, accept: 'image/jpeg,image/png,image/webp' },
             { name: 'position', label: 'Orden', type: 'number' },
             {
               name: 'active',
@@ -49,6 +50,7 @@ export default async function AdminGaleriaPage() {
           entityLabel="fotografía"
           emptyMessage="No hay imágenes en la galería."
           columns={[
+            { key: 'image_url', label: 'Imagen', type: 'image' },
             { key: 'title', label: 'Título' },
             { key: 'alt_text', label: 'Alt' },
             { key: 'position', label: 'Orden' },
@@ -56,7 +58,7 @@ export default async function AdminGaleriaPage() {
           ]}
           fields={[
             { name: 'title', label: 'Título' },
-            { name: 'image_url', label: 'URL de imagen', type: 'url', required: true },
+            { name: 'image_url', label: 'Subir imagen', type: 'file', uploadGallery: true, accept: 'image/jpeg,image/png,image/webp' },
             { name: 'alt_text', label: 'Texto alternativo (alt)', required: true },
             { name: 'description', label: 'Descripción', type: 'textarea' },
             { name: 'album_id', label: 'ID del álbum (ver lista de arriba)' },

@@ -18,6 +18,8 @@ import {
   fallbackEvents,
   fallbackFaqs,
   fallbackFestivities,
+  fallbackHistoriaContent,
+  fallbackHistoriaTimeline,
   fallbackGalleryAlbums,
   fallbackGalleryItems,
   fallbackHomeSections,
@@ -33,6 +35,8 @@ import type {
   EventItem,
   Faq,
   Festivity,
+  HistoriaContent,
+  HistoriaTimeline,
   GalleryAlbum,
   GalleryItem,
   HomeSection,
@@ -177,6 +181,33 @@ export async function getAllGalleryItemsAdmin(): Promise<GalleryItem[]> {
     const { data, error } = await db.from('gallery_items').select('*').order('position', { ascending: true });
     if (error || !data) return fallbackGalleryItems;
     return data as unknown as GalleryItem[];
+  });
+}
+
+/** Contenido de la página Historia (incluye borradores). */
+export async function getHistoriaContentAdmin(): Promise<HistoriaContent | null> {
+  const fallback = fallbackHistoriaContent;
+  return withAdminFirst(fallback, async (db) => {
+    const { data, error } = await db
+      .from('historia_content')
+      .select('*')
+      .order('updated_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (error || !data) return fallback;
+    return data as unknown as HistoriaContent;
+  });
+}
+
+/** Todos los hitos de la línea de tiempo (incluye inactivos). */
+export async function getHistoriaTimelineAdmin(): Promise<HistoriaTimeline[]> {
+  return withAdminFirst(fallbackHistoriaTimeline, async (db) => {
+    const { data, error } = await db
+      .from('historia_timeline')
+      .select('*')
+      .order('position', { ascending: true });
+    if (error || !data) return fallbackHistoriaTimeline;
+    return data as unknown as HistoriaTimeline[];
   });
 }
 

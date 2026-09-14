@@ -4,6 +4,8 @@ import {
   fallbackEvents,
   fallbackFaqs,
   fallbackFestivities,
+  fallbackHistoriaContent,
+  fallbackHistoriaTimeline,
   fallbackFooterSettings,
   fallbackGalleryAlbums,
   fallbackGalleryCategories,
@@ -24,6 +26,8 @@ import type {
   EventItem,
   Faq,
   Festivity,
+  HistoriaContent,
+  HistoriaTimeline,
   FooterSettings,
   GalleryAlbum,
   GalleryCategory,
@@ -233,6 +237,36 @@ export async function getSacramentTypes(): Promise<SacramentType[]> {
     const { data, error } = await db.from('sacrament_types').select('*').eq('active', true).order('position', { ascending: true });
     if (error || !data || data.length === 0) return fallbackSacramentTypes;
     return data as unknown as SacramentType[];
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Historia (página pública /santuario/historia)
+// ---------------------------------------------------------------------------
+
+export async function getHistoriaContent(): Promise<HistoriaContent> {
+  return withClientFallback(fallbackHistoriaContent, async (db) => {
+    const { data, error } = await db
+      .from('historia_content')
+      .select('*')
+      .eq('status', 'published')
+      .order('updated_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (error || !data) return fallbackHistoriaContent;
+    return { ...fallbackHistoriaContent, ...(data as HistoriaContent) };
+  });
+}
+
+export async function getHistoriaTimeline(): Promise<HistoriaTimeline[]> {
+  return withClientFallback(fallbackHistoriaTimeline, async (db) => {
+    const { data, error } = await db
+      .from('historia_timeline')
+      .select('*')
+      .eq('is_active', true)
+      .order('position', { ascending: true });
+    if (error || !data || data.length === 0) return fallbackHistoriaTimeline;
+    return data as unknown as HistoriaTimeline[];
   });
 }
 

@@ -361,13 +361,33 @@ export async function adminUpsertRow(table: string, payload: Record<string, unkn
   const id = typeof payload.id === 'string' && payload.id.trim() !== '' ? payload.id : undefined;
   delete clean.id;
 
+  // IDs no-UUID (datos de demostración del panel): crear un registro nuevo
+  // en la base de datos con los datos editados en lugar de fallar.
+  const isSeedId = id && !/^[0-9a-f-]{36}$/i.test(id);
+
   try {
-    if (id) {
-      const { error } = await supabaseAdmin.from(table as never).update(clean as never).eq('id', id);
+    if (id && !isSeedId) {
+      // .select('id') verifica que el UPDATE realmente afectó una fila:
+      // sin esto, un id inexistente devolvía éxito silencioso.
+      const { data: updated, error } = await supabaseAdmin
+        .from(table as never)
+        .update(clean as never)
+        .eq('id', id)
+        .select('id');
       if (error) return { ok: false, error: 'No se pudo guardar el registro.' };
+      if (!updated || (updated as unknown[]).length === 0) {
+        return { ok: false, error: 'El registro no existe en la base de datos. Ejecuta las migraciones del CMS en Supabase.' };
+      }
     } else {
-      const { error } = await supabaseAdmin.from(table as never).insert([clean] as never);
-      if (error) return { ok: false, error: 'No se pudo crear el registro.' };
+      // INSERT: crea un registro nuevo (incluye datos seed editados por primera vez)
+      const { data: inserted, error } = await supabaseAdmin
+        .from(table as never)
+        .insert([clean] as never)
+        .select('id');
+      if (error) return { ok: false, error: 'No se pudo crear el registro (¿valor o sección inválida?).' };
+      const newId = (inserted as unknown as { id: string }[])?.[0]?.id;
+      await auditLog('insert', table, newId ?? null, { fields: Object.keys(clean), fromSeed: isSeedId }, session);
+      return { ok: true, message: 'Guardado correctamente.', data: { id: newId } };
     }
     await auditLog(id ? 'update' : 'insert', table, id ?? null, { fields: Object.keys(clean) }, session);
     return { ok: true, message: 'Guardado correctamente.' };
@@ -408,11 +428,22 @@ export async function adminDeleteRow(table: string, id: string): Promise<ActionR
 export async function adminGenericSave(formData: FormData): Promise<ActionResult> {
   const table = String(formData.get('_table') ?? '');
   const payload: Record<string, unknown> = {};
-  for (const key of Array.from(formData.keys())) {
+  for (const key of Array.from(new Set(formData.keys()))) {
     if (key.startsWith('_')) continue;
-    const value = formData.get(key);
-    if (typeof value === 'string' && value.trim() !== '') {
-      payload[key] = value.trim();
+    // Con el patrón hidden(false) + checkbox(true) del mismo name, el ÚLTIMO
+    // valor es el vigente: si el checkbox está desmarcado solo llega el hidden,
+    // antes se perdía y el cambio "no se guardaba".
+    const values = formData.getAll(key).filter((v): v is string => typeof v === 'string');
+    if (values.length === 0) continue;
+    const value = values[values.length - 1].trim();
+    if (value === '') {
+      // Campo vaciado por el usuario: limpiar la columna (NULL) en vez de
+      // ignorarlo y dejar el valor anterior.
+      payload[key] = null;
+    } else if (value === 'true' || value === 'false') {
+      payload[key] = value === 'true';
+    } else {
+      payload[key] = value.slice(0, 10000);
     }
   }
   return adminUpsertRow(table, payload);
@@ -519,6 +550,38 @@ const MEDIA_MIME_EXT: Record<string, string> = {
   'image/webp': 'webp',
 };
 const MEDIA_BUCKET = 'gallery';
+
+export async function uploadGalleryImage(formData: FormData): Promise<ActionResult<{ url: string }>> {
+  const session = await requireAdminAction();
+  if (!session) return { ok: false, error: 'Sesión no válida. Vuelve a iniciar sesión.' };
+  if (!hasServiceRole() || !supabaseAdmin) return { ok: false, error: 'Configuración del servidor incompleta (service role).' };
+
+  const file = formData.get('file');
+  if (!(file instanceof File)) return { ok: false, error: 'Selecciona una imagen.' };
+  const ext = MEDIA_MIME_EXT[file.type];
+  if (!ext) return { ok: false, error: 'Formato no admitido. Usa JPG, PNG o WebP.' };
+  if (file.size <= 0 || file.size > MEDIA_MAX_BYTES) return { ok: false, error: 'La imagen debe pesar menos de 10 MB.' };
+
+  try {
+    const objectPath = `galeria/${Date.now()}-${randomBytes(6).toString('hex')}.${ext}`;
+    const buffer = Buffer.from(await file.arrayBuffer());
+    const { error: uploadError } = await supabaseAdmin.storage
+      .from(MEDIA_BUCKET)
+      .upload(objectPath, buffer, { contentType: file.type, upsert: false });
+    if (uploadError) return { ok: false, error: 'No se pudo subir la imagen a Storage.' };
+
+    const { data: pub } = supabaseAdmin.storage.from(MEDIA_BUCKET).getPublicUrl(objectPath);
+    await auditLog('insert', 'media', null, { path: objectPath, size: file.size, for: 'gallery' }, session);
+
+    return {
+      ok: true,
+      message: 'Imagen subida.',
+      data: { url: pub.publicUrl },
+    };
+  } catch {
+    return { ok: false, error: 'Error al subir la imagen.' };
+  }
+}
 
 export async function uploadMediaAsset(formData: FormData): Promise<ActionResult> {
   const session = await requireAdminAction();

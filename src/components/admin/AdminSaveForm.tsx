@@ -11,6 +11,7 @@ interface FieldConfig {
   required?: boolean;
   options?: { value: string; label: string }[];
   defaultValue?: string;
+  placeholder?: string;
   rows?: number;
   /** Grupo visual opcional: 'content' | 'seo' | 'publication' */
   group?: 'content' | 'seo' | 'publication';
@@ -65,6 +66,7 @@ export function AdminSaveForm({
           name={field.name}
           rows={field.rows ?? 4}
           required={field.required}
+          placeholder={field.placeholder}
           defaultValue={field.defaultValue}
           className={inputCls}
         />
@@ -88,6 +90,7 @@ export function AdminSaveForm({
           name={field.name}
           type={field.type || 'text'}
           required={field.required}
+          placeholder={field.placeholder}
           defaultValue={field.defaultValue}
           className={inputCls}
         />

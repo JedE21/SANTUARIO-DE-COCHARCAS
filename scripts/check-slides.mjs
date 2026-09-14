@@ -1,6 +1,6 @@
-// Verifica/aplica la migración 012 (slides) contra Supabase.
-// Uso: node scripts/apply-slides-migration.mjs [--apply]
-// Sin --apply solo comprueba si la tabla existe.
+// Verifica el estado del CMS en Supabase (tablas que usa el panel).
+// Uso: node scripts/check-slides.mjs
+// Exit 0: todo existe. Exit 1: falta algo (ejecuta supabase/apply-all.sql).
 import { createClient } from '@supabase/supabase-js';
 
 // Carga .env.local manualmente (sin dependencia de dotenv)
@@ -20,20 +20,42 @@ if (!url || !key) {
 }
 const sb = createClient(url, key, { auth: { persistSession: false } });
 
-const apply = process.argv.includes('--apply');
+const TABLES = [
+  'slides',
+  'historia_content',
+  'historia_timeline',
+  'footer_settings',
+  'navigation_items',
+  'site_settings',
+];
 
-const { error } = await sb.from('slides').select('id').limit(1);
-if (!error) {
-  console.log('EXISTE: la tabla slides ya está disponible.');
-  process.exit(0);
+let missing = [];
+for (const table of TABLES) {
+  const { error } = await sb.from(table).select('id').limit(1);
+  if (error) {
+    console.log(`✗ ${table}: ${error.message}`);
+    missing.push(table);
+  } else {
+    console.log(`✓ ${table}`);
+  }
 }
-console.log('NO_EXISTE:', error.message);
 
-if (!apply) {
-  console.log('Sugerencia: ejecuta la migración 012 en el SQL Editor de Supabase');
-  console.log('(supabase/migrations/012_slides_system.sql) y vuelve a comprobar.');
-  process.exit(0);
+// Estado del enum slide_section (insert de prueba se evita; solo informe)
+if (!missing.includes('slides')) {
+  const { count } = await sb.from('slides').select('id', { count: 'exact', head: true });
+  console.log(`  slides con datos: ${count ?? 0} fila(s)`);
+}
+if (!missing.includes('footer_settings')) {
+  const { data } = await sb.from('footer_settings').select('id, signature_text').limit(1);
+  if (data && data[0] && data[0].signature_text == null) {
+    console.log('  ⚠ footer_settings sin signature_text: ejecuta supabase/apply-all.sql');
+  }
 }
 
-console.log('La creación de tablas requiere el SQL Editor de Supabase (no hay RPC DDL).');
-process.exit(1);
+if (missing.length > 0) {
+  console.log('\nFALTAN TABLAS. Ejecuta en el SQL Editor de Supabase el archivo:');
+  console.log('  supabase/apply-all.sql');
+  process.exit(1);
+}
+console.log('\nTodo listo: el panel de administración puede guardar cambios.');
+process.exit(0);

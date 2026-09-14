@@ -20,6 +20,8 @@ export default async function AdminContactoPage() {
           { name: 'longitude', label: 'Longitud', defaultValue: settings.longitude || '' },
           { name: 'facebook_url', label: 'Facebook', type: 'url', defaultValue: settings.facebook_url || '' },
           { name: 'instagram_url', label: 'Instagram', type: 'url', defaultValue: settings.instagram_url || '' },
+          { name: 'whatsapp', label: 'WhatsApp (teléfono con código de país)', defaultValue: settings.whatsapp || '', placeholder: '+51 999 999 999' },
+          { name: 'tiktok_url', label: 'TikTok', type: 'url', defaultValue: settings.tiktok_url || '' },
           { name: 'youtube_url', label: 'YouTube', type: 'url', defaultValue: settings.youtube_url || '' },
         ]}
       />

@@ -1,14 +1,15 @@
 'use client';
 
 import * as React from 'react';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/admin/ConfirmDialog';
-import { adminGenericSave, adminGenericDelete, type ActionResult } from '@/lib/actions';
+import { adminGenericSave, adminGenericDelete, uploadGalleryImage, type ActionResult } from '@/lib/actions';
 
 interface FieldConfig {
   name: string;
   label: string;
-  type?: 'text' | 'textarea' | 'select' | 'date' | 'number' | 'url' | 'email' | 'time';
+  type?: 'text' | 'textarea' | 'select' | 'date' | 'number' | 'url' | 'email' | 'time' | 'file';
   required?: boolean;
   options?: { value: string; label: string }[];
   rows?: number;
@@ -16,6 +17,10 @@ interface FieldConfig {
   group?: 'content' | 'seo' | 'publication';
   /** Ancho completo en la parrilla de dos columnas. */
   fullWidth?: boolean;
+  /** Para campos file: indicar que es imagen de galería (usa uploadGalleryImage). */
+  uploadGallery?: boolean;
+  /** Para campos file: aceptar solo imágenes. */
+  accept?: string;
 }
 
 /**
@@ -25,8 +30,8 @@ interface FieldConfig {
 interface ColumnConfig<T> {
   key: keyof T | string;
   label: string;
-  /** Formato declarativo de la celda: texto, booleano, fecha o estado. */
-  type?: 'text' | 'boolean' | 'date' | 'status';
+  /** Formato declarativo de la celda: texto, booleano, fecha, estado o imagen. */
+  type?: 'text' | 'boolean' | 'date' | 'status' | 'image';
   trueLabel?: string;
   falseLabel?: string;
 }
@@ -133,6 +138,21 @@ export function AdminCrud<T extends { id: string }>({
         </span>
       );
     }
+    if (col.type === 'image') {
+      if (!raw || raw === '') return <span className="text-muted-foreground">—</span>;
+      return (
+        <div className="relative h-10 w-14 overflow-hidden rounded border border-piedra/20 bg-marfil">
+          <Image
+            src={String(raw)}
+            alt=""
+            fill
+            sizes="56px"
+            className="object-cover"
+            unoptimized={String(raw).includes('supabase.co') === false}
+          />
+        </div>
+      );
+    }
     return raw === null || raw === undefined || raw === '' ? (
       <span className="text-muted-foreground">—</span>
     ) : (
@@ -150,7 +170,24 @@ export function AdminCrud<T extends { id: string }>({
     if (res.ok) {
       formRef.current?.reset();
       setEditing(null);
-      window.location.reload();
+      setFilePreviews({});
+      // Si era un registro seed (ID no-UUID), reemplazarlo en el estado local
+      // con un registro "virtual" que tenga el mismo ID para que la tabla se
+      // actualice sin necesidad de recargar la página.
+      if (editing && !/^[0-9a-f-]{36}$/i.test(editing.id)) {
+        const fd = new FormData(ev.currentTarget);
+        const updatedFields: Record<string, unknown> = {};
+        for (const [key, value] of fd.entries()) {
+          if (!key.startsWith('_') && typeof value === 'string') {
+            updatedFields[key] = value === 'true' ? true : value === 'false' ? false : value || null;
+          }
+        }
+        setRows((prev) =>
+          prev.map((r) => (r.id === editing.id ? { ...r, ...updatedFields } as T : r)),
+        );
+      } else {
+        window.location.reload();
+      }
     }
   }
 
@@ -191,6 +228,9 @@ export function AdminCrud<T extends { id: string }>({
   })).filter((g) => g.items.length > 0);
   const ungrouped = fields.filter((f) => !f.group);
 
+  const [filePreviews, setFilePreviews] = React.useState<Record<string, string>>({});
+  const [uploadingField, setUploadingField] = React.useState<string | null>(null);
+
   const renderField = (field: FieldConfig) => {
     const currentValue = editing ? valueOf(editing, field.name) : '';
     const inputCls =
@@ -224,6 +264,62 @@ export function AdminCrud<T extends { id: string }>({
               </option>
             ))}
           </select>
+        ) : field.type === 'file' ? (
+          <div className="space-y-2">
+            {currentValue && !filePreviews[field.name] && (
+              <div className="relative h-24 w-32 overflow-hidden rounded border border-piedra/20 bg-marfil">
+                <Image
+                  src={currentValue}
+                  alt={field.label}
+                  fill
+                  sizes="128px"
+                  className="object-cover"
+                  unoptimized={currentValue.includes('supabase.co') === false}
+                />
+              </div>
+            )}
+            {filePreviews[field.name] && (
+              <div className="relative h-24 w-32 overflow-hidden rounded border border-dorado/40 bg-marfil">
+                <Image
+                  src={filePreviews[field.name]}
+                  alt="Preview"
+                  fill
+                  sizes="128px"
+                  className="object-cover"
+                />
+                <span className="absolute bottom-0 left-0 right-0 bg-dorado/80 px-1 text-center text-[0.6rem] text-blanco">Nueva imagen</span>
+              </div>
+            )}
+            <input
+              id={`crud-${field.name}`}
+              name={`_file_${field.name}`}
+              type="file"
+              accept={field.accept ?? 'image/jpeg,image/png,image/webp'}
+              className="block w-full text-sm text-carbone/70 file:mr-3 file:rounded-md file:border-0 file:bg-carbone file:px-3 file:py-2 file:text-sm file:text-blanco hover:file:bg-carbone/90"
+              onChange={async (ev) => {
+                const file = ev.target.files?.[0];
+                if (!file) return;
+                setUploadingField(field.name);
+                const fd = new FormData();
+                fd.set('file', file);
+                const result = await uploadGalleryImage(fd);
+                if (result.ok && result.data?.url) {
+                  setFilePreviews((prev) => ({ ...prev, [field.name]: result.data!.url }));
+                  const hiddenInput = document.createElement('input');
+                  hiddenInput.type = 'hidden';
+                  hiddenInput.name = field.name;
+                  hiddenInput.value = result.data!.url;
+                  hiddenInput.id = `crud-${field.name}`;
+                  ev.target.form?.appendChild(hiddenInput);
+                }
+                setUploadingField(null);
+              }}
+            />
+            {uploadingField === field.name && (
+              <span className="text-xs text-dorado-oscuro">Subiendo imagen…</span>
+            )}
+            <input type="hidden" name={field.name} value={filePreviews[field.name] ?? currentValue} />
+          </div>
         ) : (
           <input
             id={`crud-${field.name}`}
