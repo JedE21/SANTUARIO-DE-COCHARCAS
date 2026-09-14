@@ -4,6 +4,7 @@ import * as React from 'react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { ConfirmDialog } from '@/components/admin/ConfirmDialog';
+import { ImageCropModal } from '@/components/admin/ImageCropModal';
 import { adminGenericSave, adminGenericDelete, uploadGalleryImage, type ActionResult } from '@/lib/actions';
 
 interface FieldConfig {
@@ -230,6 +231,12 @@ export function AdminCrud<T extends { id: string }>({
 
   const [filePreviews, setFilePreviews] = React.useState<Record<string, string>>({});
   const [uploadingField, setUploadingField] = React.useState<string | null>(null);
+  const [cropModal, setCropModal] = React.useState<{
+    open: boolean;
+    imageSrc: string;
+    fieldName: string;
+    originalFile: File | null;
+  }>({ open: false, imageSrc: '', fieldName: '', originalFile: null });
 
   const renderField = (field: FieldConfig) => {
     const currentValue = editing ? valueOf(editing, field.name) : '';
@@ -296,23 +303,12 @@ export function AdminCrud<T extends { id: string }>({
               type="file"
               accept={field.accept ?? 'image/jpeg,image/png,image/webp'}
               className="block w-full text-sm text-carbone/70 file:mr-3 file:rounded-md file:border-0 file:bg-carbone file:px-3 file:py-2 file:text-sm file:text-blanco hover:file:bg-carbone/90"
-              onChange={async (ev) => {
+              onChange={(ev) => {
                 const file = ev.target.files?.[0];
                 if (!file) return;
-                setUploadingField(field.name);
-                const fd = new FormData();
-                fd.set('file', file);
-                const result = await uploadGalleryImage(fd);
-                if (result.ok && result.data?.url) {
-                  setFilePreviews((prev) => ({ ...prev, [field.name]: result.data!.url }));
-                  const hiddenInput = document.createElement('input');
-                  hiddenInput.type = 'hidden';
-                  hiddenInput.name = field.name;
-                  hiddenInput.value = result.data!.url;
-                  hiddenInput.id = `crud-${field.name}`;
-                  ev.target.form?.appendChild(hiddenInput);
-                }
-                setUploadingField(null);
+                const objectUrl = URL.createObjectURL(file);
+                setCropModal({ open: true, imageSrc: objectUrl, fieldName: field.name, originalFile: file });
+                ev.target.value = '';
               }}
             />
             {uploadingField === field.name && (
@@ -524,6 +520,37 @@ export function AdminCrud<T extends { id: string }>({
         busy={deleting !== null}
         onConfirm={performDelete}
         onCancel={() => setConfirming(null)}
+      />
+
+      {/* ---------------- Modal de crop de imagen ---------------- */}
+      <ImageCropModal
+        open={cropModal.open}
+        imageSrc={cropModal.imageSrc}
+        onCropComplete={async (blob) => {
+          URL.revokeObjectURL(cropModal.imageSrc);
+          setUploadingField(cropModal.fieldName);
+          const fd = new FormData();
+          const ext = cropModal.originalFile?.name.split('.').pop() ?? 'jpg';
+          const fileName = `recortada-${Date.now()}.${ext}`;
+          fd.set('file', new File([blob], fileName, { type: blob.type }));
+          const result = await uploadGalleryImage(fd);
+          if (result.ok && result.data?.url) {
+            setFilePreviews((prev) => ({ ...prev, [cropModal.fieldName]: result.data!.url }));
+            const hiddenInput = document.createElement('input');
+            hiddenInput.type = 'hidden';
+            hiddenInput.name = cropModal.fieldName;
+            hiddenInput.value = result.data!.url;
+            hiddenInput.id = `crud-${cropModal.fieldName}`;
+            const form = document.querySelector('form');
+            form?.appendChild(hiddenInput);
+          }
+          setUploadingField(null);
+          setCropModal({ open: false, imageSrc: '', fieldName: '', originalFile: null });
+        }}
+        onCancel={() => {
+          URL.revokeObjectURL(cropModal.imageSrc);
+          setCropModal({ open: false, imageSrc: '', fieldName: '', originalFile: null });
+        }}
       />
     </div>
   );
