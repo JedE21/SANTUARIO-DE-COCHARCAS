@@ -384,7 +384,7 @@ export async function adminUpsertRow(table: string, payload: Record<string, unkn
         .from(table as never)
         .insert([clean] as never)
         .select('id');
-      if (error) return { ok: false, error: 'No se pudo crear el registro (¿valor o sección inválida?).' };
+      if (error) return { ok: false, error: `Error al crear: ${error.message} (detail: ${error.details ?? 'ninguno'})` };
       const newId = (inserted as unknown as { id: string }[])?.[0]?.id;
       await auditLog('insert', table, newId ?? null, { fields: Object.keys(clean), fromSeed: isSeedId }, session);
       return { ok: true, message: 'Guardado correctamente.', data: { id: newId } };
