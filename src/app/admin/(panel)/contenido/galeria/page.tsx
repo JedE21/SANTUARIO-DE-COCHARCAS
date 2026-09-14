@@ -1,11 +1,18 @@
 import { AdminPageHeader } from '@/components/admin/AdminPageHeader';
 import { AdminCrud } from '@/components/admin/AdminCrud';
-import { getAllGalleryAlbumsAdmin, getAllGalleryItemsAdmin } from '@/lib/queries-admin';
+import { getAllGalleryAlbumsAdmin, getAllGalleryItemsAdmin, getAllGalleryCategoriesAdmin } from '@/lib/queries-admin';
 
 export const dynamic = 'force-dynamic';
 
 export default async function AdminGaleriaPage() {
-  const [albums, items] = await Promise.all([getAllGalleryAlbumsAdmin(), getAllGalleryItemsAdmin()]);
+  const [albums, items, categories] = await Promise.all([
+    getAllGalleryAlbumsAdmin(),
+    getAllGalleryItemsAdmin(),
+    getAllGalleryCategoriesAdmin(),
+  ]);
+
+  const categoryOptions = categories.map((c) => ({ value: c.id, label: c.name }));
+  const albumOptions = albums.map((a) => ({ value: a.id, label: a.title }));
 
   return (
     <div className="space-y-12">
@@ -26,6 +33,7 @@ export default async function AdminGaleriaPage() {
           fields={[
             { name: 'title', label: 'Nombre del álbum', required: true },
             { name: 'slug', label: 'Slug', required: true },
+            { name: 'category_id', label: 'Categoría', type: 'select', required: true, options: categoryOptions },
             { name: 'description', label: 'Descripción', type: 'textarea' },
             { name: 'cover_image_url', label: 'Imagen de portada', type: 'file', uploadGallery: true, accept: 'image/jpeg,image/png,image/webp' },
             { name: 'position', label: 'Orden', type: 'number' },
@@ -61,7 +69,7 @@ export default async function AdminGaleriaPage() {
             { name: 'image_url', label: 'Subir imagen', type: 'file', uploadGallery: true, accept: 'image/jpeg,image/png,image/webp' },
             { name: 'alt_text', label: 'Texto alternativo (alt)', required: true },
             { name: 'description', label: 'Descripción', type: 'textarea' },
-            { name: 'album_id', label: 'ID del álbum (ver lista de arriba)' },
+            { name: 'album_id', label: 'Álbum', type: 'select', required: true, options: albumOptions },
             { name: 'position', label: 'Orden', type: 'number' },
             {
               name: 'visible',

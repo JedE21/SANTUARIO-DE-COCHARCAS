@@ -21,6 +21,7 @@ import {
   fallbackHistoriaContent,
   fallbackHistoriaTimeline,
   fallbackGalleryAlbums,
+  fallbackGalleryCategories,
   fallbackGalleryItems,
   fallbackHomeSections,
   fallbackMassSchedules,
@@ -38,6 +39,7 @@ import type {
   HistoriaContent,
   HistoriaTimeline,
   GalleryAlbum,
+  GalleryCategory,
   GalleryItem,
   HomeSection,
   MassRequest,
@@ -181,6 +183,15 @@ export async function getAllGalleryItemsAdmin(): Promise<GalleryItem[]> {
     const { data, error } = await db.from('gallery_items').select('*').order('position', { ascending: true });
     if (error || !data) return fallbackGalleryItems;
     return data as unknown as GalleryItem[];
+  });
+}
+
+/** Todas las categorías de galería (incluye inactivas). */
+export async function getAllGalleryCategoriesAdmin(): Promise<GalleryCategory[]> {
+  return withAdminFirst(fallbackGalleryCategories, async (db) => {
+    const { data, error } = await db.from('gallery_categories').select('*').order('position', { ascending: true });
+    if (error || !data) return fallbackGalleryCategories;
+    return data as unknown as GalleryCategory[];
   });
 }
 
