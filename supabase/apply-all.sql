@@ -350,6 +350,27 @@ update public.site_settings set
   tiktok_url = coalesce(tiktok_url, 'https://www.tiktok.com/@santuariococharcas')
 where tiktok_url is null;
 
+-- ---------------------------------------------------------------------------
+-- AGREGAR SECCIONES FALTANTES AL ENUM (migración 016)
+-- ---------------------------------------------------------------------------
+do $$ begin
+  alter type public.slide_section add value if not exists 'noticias';
+exception
+  when duplicate_object then null;
+end $$;
+
+do $$ begin
+  alter type public.slide_section add value if not exists 'visita';
+exception
+  when duplicate_object then null;
+end $$;
+
+do $$ begin
+  alter type public.slide_section add value if not exists 'contacto';
+exception
+  when duplicate_object then null;
+end $$;
+
 -- ============================================================================
 -- FIN. El panel de administración ya puede guardar todos los cambios.
 -- ============================================================================
